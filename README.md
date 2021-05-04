@@ -1,6 +1,6 @@
 # WATCHDOG FOR FLUXNODE
 <b>How install watchdog:</b>   
-```bash -i <(curl -s https://raw.githubusercontent.com/XK4MiLX/zelnode/master/multitoolbox.sh)```  
+```bash -i <(curl -s https://raw.githubusercontent.com/RunOnFlux/fluxnode-multitool/master/multitoolbox.sh)```  
 
 ![screen2](https://raw.githubusercontent.com/XK4MiLX/zelnode/master/image/w_menu.jpg)
 
