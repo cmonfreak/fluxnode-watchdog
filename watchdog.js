@@ -10,7 +10,7 @@ console.log('=================================================================')
 
 const path = './config.js';
 
-function discord_hook(node_error){
+function discord_hook(node_error,web_hook_url){
   
   if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) { 
   
@@ -646,7 +646,7 @@ if (mongod_check == ""){
 
   if ( mongod_counter == "1" ){
   error('MongodDB crash detected!');
-  discord_hook("MongodDB crash detected!");
+  discord_hook("MongodDB crash detected!",web_hook_url);
   }
 
 } else {
