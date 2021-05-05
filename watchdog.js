@@ -1,6 +1,7 @@
 const shell = require('shelljs');
 const sleep = require('sleep');
 const moment = require('moment');
+const webhook = require("webhook-discord")
 const fs = require('fs');
 
 sleep.sleep(15);
@@ -8,6 +9,27 @@ console.log('Watchdog v4.0.6 Starting...');
 console.log('=================================================================');
 
 const path = './config.js';
+
+function discord_hook(node_error){
+  
+  if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) { 
+  
+    var node_ip = shell.exec("curl -sk -m 10 ifconfig.me",{ silent: true })  
+    const Hook = new webhook.Webhook(`${web_hook_url}`);
+    const msg = new webhook.MessageBuilder()
+    .setName("Flux Watchdog")
+    .setTitle(':loudspeaker: **FluxNode Alert**')
+    .addField('IP:', node_ip)
+    .addField('Error:', node_error)
+    .setColor('#ea1414')
+//.setThumbnail('https://zellabs.net/landing_assets/images/Flux_logo_Grey_cube.png');
+     Hook.send(msg); 
+   }  
+  
+ }
+
+
+
 
 if (fs.existsSync(path)) {
 
@@ -50,6 +72,7 @@ if (fs.existsSync(path)) {
 
 var config = require('./config.js');
 var eps_limit=config.tier_eps_min;
+var web_hook_url=config.web_hook_url;
 
 console.log('Config file:');
 console.log(`Tier: ${tire_name}`);
@@ -82,7 +105,7 @@ console.log('=================================================================')
 
   if (fs.existsSync(zelcash_path)) {
    var tx_hash = shell.exec("grep -w zelnodeoutpoint "+zelcash_path+" | sed -e 's/zelnodeoutpoint=//'",{ silent: true }).stdout;
-   var exec_comment = `zelcash-cli decoderawtransaction $(zelcash-cli getrawtransaction ${tx_hash} ) | jq '.vout[].value' | egrep '10000|25000|100000'`
+   var exec_comment = `flux-cli decoderawtransaction $(flux-cli getrawtransaction ${tx_hash} ) | jq '.vout[].value' | egrep '10000|25000|100000'`
    var type = shell.exec(`${exec_comment}`,{ silent: true }).stdout;
 
    switch(Number(type.trim())){
@@ -118,6 +141,7 @@ console.log('=================================================================')
     zelflux_update: '0',
     zelcash_update: '0',
     zelbench_update: '0'
+    web_hook: '0'
 }`;
 
 console.log('Creating config file...');
@@ -622,6 +646,7 @@ if (mongod_check == ""){
 
   if ( mongod_counter == "1" ){
   error('MongodDB crash detected!');
+  discord_hook("MongodDB crash detected!");
   }
 
 } else {
@@ -629,6 +654,7 @@ if (mongod_check == ""){
 }
 
 console.log('============================================================['+zelbench_counter+'/'+zelcashd_counter+']');
+  
 }
 setInterval(zeldaemon_check, 170000);
 setInterval(auto_update, 10800000);
