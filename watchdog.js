@@ -9,7 +9,7 @@ sleep.sleep(15);
 console.log('Watchdog v5.0.0 Starting...');
 console.log('=================================================================');
 
-const path = './config.js';
+const path = 'config.js';
 
 function discord_hook(node_error,web_hook_url){
   
