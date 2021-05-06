@@ -22,7 +22,7 @@ function discord_hook(node_error,web_hook_url){
     .addField('IP:', node_ip)
     .addField('Error:', node_error)
     .setColor('#ea1414')
-//.setThumbnail('https://zellabs.net/landing_assets/images/Flux_logo_Grey_cube.png');
+    .setThumbnail('https://fluxnodeservice.com/favicon.png');
      Hook.send(msg); 
    }  
   
@@ -167,7 +167,7 @@ console.log('=================================================================')
     tier_eps_min: '${eps_limit}',
     zelflux_update: '0',
     zelcash_update: '0',
-    zelbench_update: '0'
+    zelbench_update: '0',
     web_hook_url: '0'
 }`;
 
