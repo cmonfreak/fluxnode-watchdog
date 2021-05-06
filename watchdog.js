@@ -547,7 +547,7 @@ if (zelcash_node_status == "" || typeof zelcash_node_status == "undefined" ){
     if (expiried_time != "1"){
     expiried_time="1";
     error('Fluxnode expired => UTC: '+data_time_utc+' | LOCAL: '+local);
-    discord_hook('Fluxnode expired => UTC: '+data_time_utc+' | LOCAL: '+local,web_hook_url);
+    discord_hook('Fluxnode expired\nUTC: '+data_time_utc+'\nLOCAL: '+local,web_hook_url);
     }
 
    }
