@@ -41,16 +41,16 @@ if (fs.existsSync(path)) {
   if (!fs.existsSync(zelcash_path)) {      
      zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;     
      daemon_cli='flux-cli';
-     daemon_package_name='flux;
+     daemon_package_name='flux';
    }
   
   
   if (fs.existsSync(`/usr/local/bin/fluxbenchd`)) {        
      bench_cli='fluxbench-cli';
-     bench_package_name='fluxbench;
+     bench_package_name='fluxbench';
    } else {
      bench_cli='zelbench-cli';
-     bench_package_name='zelbench;     
+     bench_package_name='zelbench';     
    }
   
 
@@ -117,13 +117,13 @@ console.log('=================================================================')
   if (!fs.existsSync(zelcash_path)) {      
      zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;     
      daemon_cli='flux-cli';
-     daemon_package_name='flux;
+     daemon_package_name='flux';
    }
   
   
   if (fs.existsSync(`/usr/local/bin/fluxbenchd`)) {        
      bench_cli='fluxbench-cli';
-     bench_package_name='fluxbench;
+     bench_package_name='fluxbench';
    } else {
      bench_cli='zelbench-cli';
      bench_package_name='zelbench;     
