@@ -18,7 +18,7 @@ Discord alert:
 0 - disabled
 url set endabled ( ex. https://discord.com/api/webhooks/824918257701614100/6h57eHyqGOUMqc3EXe7u4l-mE2ViJKV2_2IzUQw3u5QziVqx3wmBvqWMSpVr8_PIQ0E5 )
 ```
-<b>Sample config::</b>
+<b>Sample config:</b>
 ```
 module.exports = {
     tier_eps_min: '300',
