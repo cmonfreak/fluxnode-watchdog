@@ -90,6 +90,12 @@ var web_hook_url=config.web_hook_url;
 console.log('Config file:');
 console.log(`Tier: ${tire_name}`);
 console.log(`Minimum eps: ${eps_limit}`);
+if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" )
+{ 
+console.log('=> Discord alert:  enabled');   
+} else {
+console.log('=> Discord alert:  disabled'); 
+}
 console.log(`Update settings:`);
 if ( config.zelcash_update == "1" ) {
 console.log('=> Flux daemon:  enabled');
@@ -186,6 +192,12 @@ var config = require('./config.js');
 console.log('Config file:');
 console.log(`Tier: ${tire_name}`);
 console.log(`Minimum eps: ${eps_limit}`);
+if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" )
+{ 
+console.log('=> Discord alert:  enabled');   
+} else {
+console.log('=> Discord alert:  disabled'); 
+}
 console.log(`Update settings:`);
 if ( config.zelcash_update == "1" ) {
 console.log('=> Flux daemon:  enabled');
