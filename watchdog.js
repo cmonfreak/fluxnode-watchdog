@@ -187,7 +187,7 @@ console.log("========================");
       userconfig.end();
     });
 
-
+sleep.sleep(3);
 var config = require('./config.js');
 
 console.log('Config file:');
