@@ -126,7 +126,7 @@ console.log('=================================================================')
      bench_package_name='fluxbench';
    } else {
      bench_cli='zelbench-cli';
-     bench_package_name='zelbench;     
+     bench_package_name='zelbench';     
    }
   
   
