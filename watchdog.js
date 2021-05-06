@@ -3,10 +3,10 @@ const sleep = require('sleep');
 const moment = require('moment');
 const webhook = require("webhook-discord")
 const fs = require('fs');
-const webhook = require("webhook-discord")
+
 
 sleep.sleep(15);
-console.log('Watchdog v4.0.6 Starting...');
+console.log('Watchdog v5.0.0 Starting...');
 console.log('=================================================================');
 
 const path = './config.js';
