@@ -588,7 +588,7 @@ if (zelbench_benchmark_status == "" || typeof zelbench_benchmark_status == "unde
 
   if (zelbench_benchmark_status == "toaster" || zelbench_benchmark_status  == "failed" ){
     console.log('Benchmark status = '+zelbench_benchmark_status);
-    discord_hook('Benchmark status = '+zelbench_benchmark_status,web_hook_url);
+    discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url);
     
   } else {
     console.log('Benchmark status = '+zelbench_benchmark_status);
@@ -691,8 +691,8 @@ if (mongod_check == ""){
   }
 
   if ( mongod_counter == "1" ){
-  error('MongodDB crash detected!');
-  discord_hook("MongodDB crash detected!",web_hook_url);
+  error('MongoDB crash detected!');
+  discord_hook("MongoDB crash detected!",web_hook_url);
   }
 
 } else {
