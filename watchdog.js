@@ -14,21 +14,21 @@ var sync_lock = 0;
 
 async function Myip(){
 
-const check_list = ['ifconfig.me', 'api4.my-ip.io/ip', 'checkip.amazonaws.com' , 'api.ipify.org'];
-var MyIP = null;
+  const check_list = ['ifconfig.me', 'api4.my-ip.io/ip', 'checkip.amazonaws.com' , 'api.ipify.org'];
+  var MyIP = null;
 
+  for (const [index, val] of check_list.entries()) {
 
-for (const [index, val] of check_list.entries()) {
+     MyIP = await shell.exec(`curl -sk -m 5 https://${val} | tr -dc '[:alnum:].'`,{ silent: true }).stdout;
 
-MyIP = await shell.exec(`curl -sk -m 5 https://${val} | tr -dc '[:alnum:].'`,{ silent: true }).stdout;
+     if ( MyIP.length > 5){
+        break;
+     }
 
-  if ( MyIP.length > 5){
-    break;
   }
 
-}
-
 return MyIP;
+  
 }
 
 
@@ -60,11 +60,12 @@ async function discord_hook(node_error,web_hook_url,ping) {
           .setThumbnail('https://fluxnodeservice.com/favicon.png')
           .setText(`Ping: <@${ping}>`);
            Hook.send(msg);
-     }
+      }
 
    }
 
  }
+
 
 function max() {
     var args = Array.prototype.slice.call(arguments);
@@ -76,31 +77,27 @@ function max() {
 
 async function Check_Sync(height) {
 
-var exec_comment1=`curl -sk -m 8 https://explorer.flux.zelcore.io/api/status?q=getInfo | jq '.info.blocks'`
-var exec_comment2=`curl -sk -m 8 https://explorer.runonflux.io/api/status?q=getInfo | jq '.info.blocks'`
-var exec_comment3=`curl -sk -m 8 https://explorer.zelcash.online/api/status?q=getInfo | jq '.info.blocks'`
-var explorer_block_height_01 = await shell.exec(`${exec_comment1}`,{ silent: true }).stdout;
-var explorer_block_height_02 = await shell.exec(`${exec_comment2}`,{ silent: true }).stdout;
-var explorer_block_height_03 = await shell.exec(`${exec_comment3}`,{ silent: true }).stdout;
+  var exec_comment1=`curl -sk -m 8 https://explorer.flux.zelcore.io/api/status?q=getInfo | jq '.info.blocks'`
+  var exec_comment2=`curl -sk -m 8 https://explorer.runonflux.io/api/status?q=getInfo | jq '.info.blocks'`
+  var exec_comment3=`curl -sk -m 8 https://explorer.zelcash.online/api/status?q=getInfo | jq '.info.blocks'`
+  var explorer_block_height_01 = await shell.exec(`${exec_comment1}`,{ silent: true }).stdout;
+  var explorer_block_height_02 = await shell.exec(`${exec_comment2}`,{ silent: true }).stdout;
+  var explorer_block_height_03 = await shell.exec(`${exec_comment3}`,{ silent: true }).stdout;
+  var explorer_block_height = max(explorer_block_height_01,explorer_block_height_02,explorer_block_height_03);
+  var height_diff = Math.abs(explorer_block_height-height);
 
-
-var explorer_block_height = max(explorer_block_height_01,explorer_block_height_02,explorer_block_height_03);
-var height_diff = Math.abs(explorer_block_height-height);
-
- if ( height_diff < 10 && sync_lock == 0 ) {
-   console.log(`Flux daemon is synced (${height}, diff: ${height_diff})`);
-   sync_lock = 0;
-  }else{
-
-      console.log(`Flux daemon is not synced (${height}, diff: ${height_diff})`);
+  if ( height_diff < 10 && sync_lock == 0 ) {
+    console.log(`Flux daemon is synced (${height}, diff: ${height_diff})`);
+    sync_lock = 0;
+  } else {
+    
+    console.log(`Flux daemon is not synced (${height}, diff: ${height_diff})`);
     if ( sync_lock == 0 ) {
-      discord_hook(`Flux daemon is not synced!\nDaemon height: **${height}**\nNetwork height: **${explorer_block_height}**\nDiff: **${height_diff}**`,web_hook_url,ping);
-      sync_lock = 1;
+       discord_hook(`Flux daemon is not synced!\nDaemon height: **${height}**\nNetwork height: **${explorer_block_height}**\nDiff: **${height_diff}**`,web_hook_url,ping);
+       sync_lock = 1;
     }
-
+    
   }
-
-
 }
 
 
