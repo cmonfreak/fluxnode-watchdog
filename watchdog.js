@@ -26,9 +26,7 @@ async function Myip(){
      }
 
   }
-
-return MyIP;
-  
+return MyIP; 
 }
 
 
@@ -38,7 +36,6 @@ async function discord_hook(node_error,web_hook_url,ping) {
 
       if ( typeof ping == "undefined" || ping == "0") {
           var node_ip = await Myip();
-
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           const msg = new webhook.MessageBuilder()
           .setName("Flux Watchdog")
