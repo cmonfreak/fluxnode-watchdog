@@ -12,12 +12,33 @@ console.log('=================================================================')
 const path = 'config.js';
 var sync_lock = 0;
 
-function discord_hook(node_error,web_hook_url,ping) {
+async function Myip(){
+
+const check_list = ['ifconfig.me', 'api4.my-ip.io/ip', 'checkip.amazonaws.com' , 'api.ipify.org'];
+var MyIP = null;
+
+
+for (const [index, val] of check_list.entries()) {
+
+MyIP = await shell.exec(`curl -sk -m 5 https://${val} | tr -dc '[:alnum:].'`,{ silent: true }).stdout;
+
+  if ( MyIP.length > 5){
+    break;
+  }
+
+}
+
+return MyIP;
+}
+
+
+async function discord_hook(node_error,web_hook_url,ping) {
 
   if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
 
       if ( typeof ping == "undefined" || ping == "0") {
-          var node_ip = shell.exec("curl -sk -m 10 ifconfig.me",{ silent: true });
+          var node_ip = await Myip();
+
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           const msg = new webhook.MessageBuilder()
           .setName("Flux Watchdog")
@@ -28,7 +49,7 @@ function discord_hook(node_error,web_hook_url,ping) {
           .setThumbnail('https://fluxnodeservice.com/favicon.png');
           Hook.send(msg);
       } else {
-          var node_ip = shell.exec("curl -sk -m 10 ifconfig.me",{ silent: true });
+          var node_ip = await Myip();
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           const msg = new webhook.MessageBuilder()
           .setName("Flux Watchdog")
@@ -638,7 +659,7 @@ if (zelcash_node_status == "" || typeof zelcash_node_status == "undefined" ){
     if (expiried_time != "1"){
     expiried_time="1";
     error('Fluxnode expired => UTC: '+data_time_utc+' | LOCAL: '+local);
-    discord_hook('Fluxnode expired\nUTC: '+data_time_utc+'\nLOCAL: '+local,web_hook_url,ping);
+    await discord_hook('Fluxnode expired\nUTC: '+data_time_utc+'\nLOCAL: '+local,web_hook_url,ping);
     }
 
    }
@@ -656,7 +677,7 @@ if (zelback_status == "" || typeof zelback_status == "undefined"){
     console.log('FluxOS status = '+zelback_status);
     if ( lock_zelback != "1" ) {
     error('FluxOS disconnected!');
-    discord_hook("FluxOS disconnected!",web_hook_url,ping);
+    await discord_hook("FluxOS disconnected!",web_hook_url,ping);
     lock_zelback=1;
     }
   } else {
@@ -683,7 +704,7 @@ if (zelbench_benchmark_status == "" || typeof zelbench_benchmark_status == "unde
 
   if (zelbench_benchmark_status == "toaster" || zelbench_benchmark_status  == "failed" ){
     console.log('Benchmark status = '+zelbench_benchmark_status);
-    discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping);
+   await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping);
 
   } else {
     console.log('Benchmark status = '+zelbench_benchmark_status);
@@ -739,7 +760,7 @@ else {
 
    if ( zelcashd_counter == "1" ){
       error('Flux daemon crash detected!');
-      discord_hook("Flux daemon crash detected!",web_hook_url,ping);
+     await discord_hook("Flux daemon crash detected!",web_hook_url,ping);
    }
 
    if ( typeof action  == "undefined" || action == "1" ){
@@ -801,14 +822,14 @@ if (mongod_check == ""){
 
   if ( mongod_counter == "1" ){
   error('MongoDB crash detected!');
-  discord_hook("MongoDB crash detected!",web_hook_url,ping);
+  await discord_hook("MongoDB crash detected!",web_hook_url,ping);
   }
 
 } else {
  mongod_counter=0;
 }
 
- if ( zelcash_height != "" || typeof zelcash_height != "undefined" ){
+ if ( zelcash_height != "" && typeof zelcash_height != "undefined" ){
   await Check_Sync(zelcash_height);
  }
 
