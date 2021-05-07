@@ -4,11 +4,12 @@ const moment = require('moment');
 const webhook = require("webhook-discord")
 const fs = require('fs');
 
+
 sleep.sleep(15);
-console.log('Watchdog v4.0.6 Starting...');
+console.log('Watchdog v5.0.0 Starting...');
 console.log('=================================================================');
 
-const path = './config.js';
+const path = 'config.js';
 
 function discord_hook(node_error,web_hook_url){
   
@@ -186,7 +187,7 @@ console.log("========================");
       userconfig.end();
     });
 
-
+sleep.sleep(3);
 var config = require('./config.js');
 
 console.log('Config file:');
@@ -423,7 +424,11 @@ console.log('=================================================================')
 }
 
 function zeldaemon_check() {
-
+  
+  delete require.cache[require.resolve('./config.js')];
+  var config = require('./config.js');
+  web_hook_url=config.web_hook_url;
+  
   const service_inactive = shell.exec("systemctl list-units --full -all | grep 'zelcash' | grep -o 'inactive'",{ silent: true }).stdout;
   const data_time_utc = moment.utc().format('YYYY-MM-DD HH:mm:ss');
   const stillUtc = moment.utc(data_time_utc).toDate();
@@ -542,7 +547,7 @@ if (zelcash_node_status == "" || typeof zelcash_node_status == "undefined" ){
     if (expiried_time != "1"){
     expiried_time="1";
     error('Fluxnode expired => UTC: '+data_time_utc+' | LOCAL: '+local);
-    discord_hook('Fluxnode expired => UTC: '+data_time_utc+' | LOCAL: '+local,web_hook_url);
+    discord_hook('Fluxnode expired\nUTC: '+data_time_utc+'\nLOCAL: '+local,web_hook_url);
     }
 
    }
@@ -587,7 +592,7 @@ if (zelbench_benchmark_status == "" || typeof zelbench_benchmark_status == "unde
 
   if (zelbench_benchmark_status == "toaster" || zelbench_benchmark_status  == "failed" ){
     console.log('Benchmark status = '+zelbench_benchmark_status);
-    discord_hook('Benchmark status = '+zelbench_benchmark_status,web_hook_url);
+    discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url);
     
   } else {
     console.log('Benchmark status = '+zelbench_benchmark_status);
@@ -690,8 +695,8 @@ if (mongod_check == ""){
   }
 
   if ( mongod_counter == "1" ){
-  error('MongodDB crash detected!');
-  discord_hook("MongodDB crash detected!",web_hook_url);
+  error('MongoDB crash detected!');
+  discord_hook("MongoDB crash detected!",web_hook_url);
   }
 
 } else {
