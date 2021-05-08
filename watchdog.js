@@ -6,30 +6,106 @@ const fs = require('fs');
 
 
 sleep.sleep(15);
-console.log('Watchdog v5.0.0 Starting...');
+console.log('Watchdog v5.0.1 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
+var sync_lock = 0;
+var tire_lock=0;
+var lock_zelback=0;
+var zelcashd_counter=0;
+var zelbench_counter=0;
+var inactive_counter=0;
+var mongod_counter=0;
+var paid_local_time="N/A";
+var expiried_time="N/A";
+var watchdog_sleep="N/A";
 
-function discord_hook(node_error,web_hook_url){
-  
-  if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) { 
-  
-    var node_ip = shell.exec("curl -sk -m 10 ifconfig.me",{ silent: true })  
-    const Hook = new webhook.Webhook(`${web_hook_url}`);
-    const msg = new webhook.MessageBuilder()
-    .setName("Flux Watchdog")
-    .setTitle(':loudspeaker: **FluxNode Alert**')
-    .addField('IP:', node_ip)
-    .addField('Error:', node_error)
-    .setColor('#ea1414')
-    .setThumbnail('https://fluxnodeservice.com/favicon.png');
-     Hook.send(msg); 
-   }  
-  
+
+async function Myip(){
+
+  const check_list = ['ifconfig.me', 'api4.my-ip.io/ip', 'checkip.amazonaws.com' , 'api.ipify.org'];
+  var MyIP = null;
+
+  for (const [index, val] of check_list.entries()) {
+
+     MyIP = await shell.exec(`curl -sk -m 5 https://${val} | tr -dc '[:alnum:].'`,{ silent: true }).stdout;
+
+     if ( MyIP.length > 5){
+        break;
+     }
+
+  }
+return MyIP; 
+}
+
+
+async function discord_hook(node_error,web_hook_url,ping) {
+
+  if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
+
+      if ( typeof ping == "undefined" || ping == "0") {
+          var node_ip = await Myip();
+          const Hook = new webhook.Webhook(`${web_hook_url}`);
+          const msg = new webhook.MessageBuilder()
+          .setName("Flux Watchdog")
+          .setTitle(':loudspeaker: **FluxNode Alert**')
+          .addField('URL:', `http://${node_ip}:16126`)
+          .addField('Error:', node_error)
+          .setColor('#ea1414')
+          .setThumbnail('https://fluxnodeservice.com/favicon.png');
+          Hook.send(msg);
+      } else {
+          var node_ip = await Myip();
+          const Hook = new webhook.Webhook(`${web_hook_url}`);
+          const msg = new webhook.MessageBuilder()
+          .setName("Flux Watchdog")
+          .setTitle(':loudspeaker: **FluxNode Alert**')
+          .addField('URL:', `http://${node_ip}:16126`)
+          .addField('Error:', node_error)
+          .setColor('#ea1414')
+          .setThumbnail('https://fluxnodeservice.com/favicon.png')
+          .setText(`Ping: <@${ping}>`);
+           Hook.send(msg);
+      }
+
+   }
+
  }
 
 
+function max() {
+    var args = Array.prototype.slice.call(arguments);
+    return Math.max.apply(Math, args.filter(function(val) {
+       return !isNaN(val);
+    }));
+}
+
+
+async function Check_Sync(height) {
+
+  var exec_comment1=`curl -sk -m 8 https://explorer.flux.zelcore.io/api/status?q=getInfo | jq '.info.blocks'`
+  var exec_comment2=`curl -sk -m 8 https://explorer.runonflux.io/api/status?q=getInfo | jq '.info.blocks'`
+  var exec_comment3=`curl -sk -m 8 https://explorer.zelcash.online/api/status?q=getInfo | jq '.info.blocks'`
+  var explorer_block_height_01 = await shell.exec(`${exec_comment1}`,{ silent: true }).stdout;
+  var explorer_block_height_02 = await shell.exec(`${exec_comment2}`,{ silent: true }).stdout;
+  var explorer_block_height_03 = await shell.exec(`${exec_comment3}`,{ silent: true }).stdout;
+  var explorer_block_height = max(explorer_block_height_01,explorer_block_height_02,explorer_block_height_03);
+  var height_diff = Math.abs(explorer_block_height-height);
+
+  if ( height_diff < 10 && sync_lock == 0 ) {
+    console.log(`Flux daemon is synced (${height}, diff: ${height_diff})`);
+    sync_lock = 0;
+  } else {
+    
+    console.log(`Flux daemon is not synced (${height}, diff: ${height_diff})`);
+    if ( sync_lock == 0 ) {
+       discord_hook(`Flux daemon is not synced!\nDaemon height: **${height}**\nNetwork height: **${explorer_block_height}**\nDiff: **${height_diff}**`,web_hook_url,ping);
+       sync_lock = 1;
+    }
+    
+  }
+}
 
 
 if (fs.existsSync(path)) {
@@ -38,22 +114,22 @@ if (fs.existsSync(path)) {
   var  zelcash_path = `${home_dir.trim()}/.zelcash/zelcash.conf`;
   var daemon_cli='zelcash-cli';
   var daemon_package_name='zelcash';
-   
-  if (!fs.existsSync(zelcash_path)) {      
-     zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;     
+
+  if (!fs.existsSync(zelcash_path)) {
+     zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;
      daemon_cli='flux-cli';
      daemon_package_name='flux';
    }
-  
-  
-  if (fs.existsSync(`/usr/local/bin/fluxbenchd`)) {        
+
+
+  if (fs.existsSync(`/usr/local/bin/fluxbenchd`)) {
      bench_cli='fluxbench-cli';
      bench_package_name='fluxbench';
    } else {
      bench_cli='zelbench-cli';
-     bench_package_name='zelbench';     
+     bench_package_name='zelbench';
    }
-  
+
 
   if (fs.existsSync(zelcash_path)) {
    var tx_hash = shell.exec("grep -w zelnodeoutpoint "+zelcash_path+" | sed -e 's/zelnodeoutpoint=//'",{ silent: true }).stdout;
@@ -62,15 +138,15 @@ if (fs.existsSync(path)) {
 
    switch(Number(type.trim())){
        case 10000:
-       var  tire_name="BASIC";
+       var  tire_name="CUMULUS";
        break;
 
        case 25000:
-       var  tire_name="SUPER";
+       var  tire_name="NIMBUS";
        break;
 
        case 100000:
-       var  tire_name="BAMF";
+       var  tire_name="STRATUS";
        break;
 
        default:
@@ -87,15 +163,33 @@ if (fs.existsSync(path)) {
 var config = require('./config.js');
 var eps_limit=config.tier_eps_min;
 var web_hook_url=config.web_hook_url;
+var action=config.action;
+var ping=config.ping;
 
 console.log('Config file:');
 console.log(`Tier: ${tire_name}`);
 console.log(`Minimum eps: ${eps_limit}`);
-if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" )
-{ 
-console.log('Discord alert:  enabled');   
+if (typeof action == "undefined" || action == "1" )
+{
+console.log('Fix action:  enabled');
 } else {
-console.log('Discord alert:  disabled'); 
+console.log('Fix action:  disabled');
+}
+
+if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" )
+{
+console.log('Discord alert:  enabled');
+
+if (typeof ping !== "undefined" && ping !== "0" ){
+console.log('Discord ping:  enabled');
+} else {
+console.log('Discord ping:  disabled');
+}
+
+
+
+} else {
+console.log('Discord alert:  disabled');
 }
 console.log(`Update settings:`);
 if ( config.zelcash_update == "1" ) {
@@ -120,23 +214,23 @@ console.log('=================================================================')
   var  zelcash_path = `${home_dir.trim()}/.zelcash/zelcash.conf`;
   var daemon_cli='zelcash-cli';
   var daemon_package_name='zelcash';
-  
-  if (!fs.existsSync(zelcash_path)) {      
-     zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;     
+
+  if (!fs.existsSync(zelcash_path)) {
+     zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;
      daemon_cli='flux-cli';
      daemon_package_name='flux';
    }
-  
-  
-  if (fs.existsSync(`/usr/local/bin/fluxbenchd`)) {        
+
+
+  if (fs.existsSync(`/usr/local/bin/fluxbenchd`)) {
      bench_cli='fluxbench-cli';
      bench_package_name='fluxbench';
    } else {
      bench_cli='zelbench-cli';
-     bench_package_name='zelbench';     
+     bench_package_name='zelbench';
    }
-  
-  
+
+
   if (fs.existsSync(zelcash_path)) {
    var tx_hash = shell.exec("grep -w zelnodeoutpoint "+zelcash_path+" | sed -e 's/zelnodeoutpoint=//'",{ silent: true }).stdout;
    var exec_comment = `${daemon_cli} decoderawtransaction $(${daemon_cli} getrawtransaction ${tx_hash} ) | jq '.vout[].value' | egrep '10000|25000|100000'`
@@ -144,17 +238,17 @@ console.log('=================================================================')
 
    switch(Number(type.trim())){
        case 10000:
-       var  tire_name="BASIC";
+       var  tire_name="CUMULUS";
        var eps_limit = 90;
        break;
 
        case 25000:
-       var  tire_name="SUPER";
+       var  tire_name="NIMBUS";
        var eps_limit = 180
        break;
 
        case 100000:
-       var  tire_name="BAMF";
+       var  tire_name="STRATUS";
        var eps_limit = 300
        break;
 
@@ -175,6 +269,8 @@ console.log('=================================================================')
     zelflux_update: '0',
     zelcash_update: '0',
     zelbench_update: '0',
+    action: '1',
+    ping: '0';
     web_hook_url: '0'
 }`;
 
@@ -189,15 +285,33 @@ console.log("========================");
 
 sleep.sleep(3);
 var config = require('./config.js');
+var web_hook_url=config.web_hook_url;
+var action=config.action;
+var ping=config.ping;
 
 console.log('Config file:');
 console.log(`Tier: ${tire_name}`);
 console.log(`Minimum eps: ${eps_limit}`);
-if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" )
-{ 
-console.log('Discord alert:  enabled');   
+if (typeof action == "undefined" || action == "1" )
+{
+console.log('Fix action:  enabled');
 } else {
-console.log('Discord alert:  disabled'); 
+console.log('Fix action:  disabled');
+}
+
+if (typeof web_hook_url !== "undefined" && web_hook_url !== "0" )
+{
+console.log('Discord alert:  enabled');
+
+if (typeof ping !== "undefined" && ping !== "0" ) {
+console.log('Discord ping:  enabled');
+} else {
+console.log('Discord ping:  disabled');
+}
+
+
+} else {
+console.log('Discord alert:  disabled');
 }
 console.log(`Update settings:`);
 if ( config.zelcash_update == "1" ) {
@@ -219,15 +333,6 @@ console.log('=================================================================')
 
 }
 
-var tire_lock=0;
-var lock_zelback=0;
-var zelcashd_counter=0;
-var zelbench_counter=0;
-var inactive_counter=0;
-var mongod_counter=0;
-var paid_local_time="N/A";
-var expiried_time="N/A";
-var watchdog_sleep="N/A";
 
 
 function getFilesizeInBytes(filename) {
@@ -282,15 +387,15 @@ if ( remote_version.trim() != "" && local_version.trim() != "" ){
    console.log('Remote version: '+remote_version.trim());
    console.log('=================================================================');
    shell.exec("cd /home/$USER/watchdog && git pull",{ silent: true }).stdout;
-   
+
    var local_ver = shell.exec("jq -r '.version' package.json",{ silent: true }).stdout;
    if ( local_ver.trim() == remote_version.trim() ){
       console.log('Update successfully.');
       sleep.sleep(2);
    }
-   
+
    console.log(' ');
-   
+
   }
 }
 
@@ -373,7 +478,7 @@ if (config.zelbench_update == "1") {
 
  var zelbench_remote_version = shell.exec("curl -s -m 5 https://apt.runonflux.io/pool/main/f/fluxbench/ | grep -o '[0-9].[0-9].[0-9]' | head -n1",{ silent: true }).stdout;
  var zelbench_local_version = shell.exec("dpkg -l fluxbench | grep -w fluxbench | awk '{print $3}'",{ silent: true }).stdout;
- 
+
 
  console.log(`Fluxbench current: ${zelbench_remote_version.trim()} installed: ${zelbench_local_version.trim()}`);
 
@@ -401,8 +506,8 @@ if (config.zelbench_update == "1") {
    shell.exec("sudo apt-get update",{ silent: true })
    shell.exec("sudo apt-get install fluxbench -y",{ silent: true })
    sleep.sleep(2);
-   shell.exec("sudo systemctl start zelcash",{ silent: true })   
-      
+   shell.exec("sudo systemctl start zelcash",{ silent: true })
+
    var zelbench_dpkg_version_after = shell.exec(`dpkg -l fluxbench | grep -w fluxbench | awk '{print $3}'`,{ silent: true }).stdout;
 
      if ( (zelbench_dpkg_version_before !== zelbench_dpkg_version_after) && zelbench_dpkg_version_after != "" ){
@@ -423,12 +528,15 @@ console.log('=================================================================')
 
 }
 
-function zeldaemon_check() {
-  
+
+async function zeldaemon_check() {
+
   delete require.cache[require.resolve('./config.js')];
   var config = require('./config.js');
-  web_hook_url=config.web_hook_url;
-  
+  web_hook_url = config.web_hook_url;
+  action = config.action;
+  ping=config.ping;
+
   const service_inactive = shell.exec("systemctl list-units --full -all | grep 'zelcash' | grep -o 'inactive'",{ silent: true }).stdout;
   const data_time_utc = moment.utc().format('YYYY-MM-DD HH:mm:ss');
   const stillUtc = moment.utc(data_time_utc).toDate();
@@ -473,31 +581,31 @@ if ( zelbench_counter > 2 || zelcashd_counter > 2 ){
   }
 
    if (watchdog_sleep != "1"){
-     
+
       watchdog_sleep="1";
-     
-     if ( zelcashd_counter > 2 ) { 
+
+     if ( zelcashd_counter > 2 ) {
        error('Watchdog in sleep mode! Flux daemon status: not responding');
-      } else { 
-       error('Watchdog in sleep mode! Fluxbench status: '+zelbench_benchmark_status);   
+      } else {
+       error('Watchdog in sleep mode! Fluxbench status: '+zelbench_benchmark_status);
       }
-     
-   }   
-  
+
+   }
+
    if (typeof zelcash_check !== "undefined" && zelbench_benchmark_status != "toaster" && zelbench_benchmark_status != "failed"  && typeof zelbench_benchmark_status !== "undefined"){
           zelcashd_counter=0;
           zelbench_counter=0;
-          watchdog_sleep="N/A" 
+          watchdog_sleep="N/A"
    } else {
-  
+
         console.log('Watchdog in sleep mode => '+data_time_utc);
-        console.log('================================================================='); 
+        console.log('=================================================================');
         return;
    }
  }
 
 try{
-  
+
     var zelbench_getstatus_info = JSON.parse(shell.exec(`${bench_cli} getstatus`,{ silent: true }).stdout);
     var zelbench_status = zelbench_getstatus_info.status;
     var zelback_status = zelbench_getstatus_info.zelback;
@@ -522,6 +630,7 @@ try{
  try{
     var  zelcash_getinfo_info = JSON.parse(shell.exec(`${daemon_cli} getinfo`,{ silent: true }).stdout);
     var zelcash_check = zelcash_getinfo_info.version;
+    var zelcash_height = zelcash_getinfo_info.blocks;
  }catch {
 
 }
@@ -547,7 +656,7 @@ if (zelcash_node_status == "" || typeof zelcash_node_status == "undefined" ){
     if (expiried_time != "1"){
     expiried_time="1";
     error('Fluxnode expired => UTC: '+data_time_utc+' | LOCAL: '+local);
-    discord_hook('Fluxnode expired\nUTC: '+data_time_utc+'\nLOCAL: '+local,web_hook_url);
+    await discord_hook('Fluxnode expired\nUTC: '+data_time_utc+'\nLOCAL: '+local,web_hook_url,ping);
     }
 
    }
@@ -565,7 +674,7 @@ if (zelback_status == "" || typeof zelback_status == "undefined"){
     console.log('FluxOS status = '+zelback_status);
     if ( lock_zelback != "1" ) {
     error('FluxOS disconnected!');
-    discord_hook("FluxOS disconnected!",web_hook_url);
+    await discord_hook("FluxOS disconnected!",web_hook_url,ping);
     lock_zelback=1;
     }
   } else {
@@ -592,8 +701,7 @@ if (zelbench_benchmark_status == "" || typeof zelbench_benchmark_status == "unde
 
   if (zelbench_benchmark_status == "toaster" || zelbench_benchmark_status  == "failed" ){
     console.log('Benchmark status = '+zelbench_benchmark_status);
-    discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url);
-    
+    await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping);
   } else {
     console.log('Benchmark status = '+zelbench_benchmark_status);
   }
@@ -642,15 +750,23 @@ if (typeof zelcash_check !== "undefined" ){
   console.log('Flux daemon status = running');
 }
 else {
+
   ++zelcashd_counter;
   console.log('Flux daemon status = dead');
-  shell.exec("sudo systemctl stop zelcash",{ silent: true })
-  sleep.sleep(2);
-  shell.exec("sudo fuser -k 16125/tcp",{ silent: true })
-  shell.exec("sudo systemctl start zelcash",{ silent: true })
-  console.log(data_time_utc+' => Flux daemon restarting...');
-  error('Flux daemon crash detected!');
-  discord_hook("Flux daemon crash detected!",web_hook_url);
+
+   if ( zelcashd_counter == "1" ){
+      error('Flux daemon crash detected!');
+     await discord_hook("Flux daemon crash detected!",web_hook_url,ping);
+   }
+
+   if ( typeof action  == "undefined" || action == "1" ){
+      shell.exec("sudo systemctl stop zelcash",{ silent: true });
+      sleep.sleep(2);
+      shell.exec("sudo fuser -k 16125/tcp",{ silent: true });
+      shell.exec("sudo systemctl start zelcash",{ silent: true });
+      console.log(data_time_utc+' => Flux daemon restarting...');
+   }
+
 }
 
 if ( zelbench_benchmark_status == "toaster" || zelbench_benchmark_status == "failed" ){
@@ -660,8 +776,10 @@ if ( zelbench_benchmark_status == "toaster" || zelbench_benchmark_status == "fai
   error('Reason: '+error_line.trim());
   console.log('Benchmark problem detected! Fluxbench status: '+zelbench_benchmark_status);
   console.log('Reason: '+error_line.trim());
-  console.log(data_time_utc+' => Fluxbench restarting...');
-  shell.exec(`${bench_cli} restartnodebenchmarks`,{ silent: true });
+  if ( typeof action  == "undefined" || action == "1" ){
+    console.log(data_time_utc+' => Fluxbench restarting...');
+    shell.exec(`${bench_cli} restartnodebenchmarks`,{ silent: true });
+  }
 }
 else{
 zelbench_counter=0;
@@ -676,10 +794,12 @@ if ( tire_lock < 4 ) {
 error('Benchmark problem detected! CPU eps under minimum limit for '+tire_name+'('+eps_limit+'), current eps: '+zelbench_eps.toFixed(2));
 console.log('Benchmark problem detected!');
 console.log('CPU eps under minimum limit for '+tire_name+'('+eps_limit+'), current eps: '+zelbench_eps.toFixed(2));
-console.log(data_time_utc+' => Fluxbench restarting...');
-shell.exec(`${bench_cli} restartnodebenchmarks`,{ silent: true });
+  if ( typeof action  == "undefined" || action == "1" ){
+    console.log(data_time_utc+' => Fluxbench restarting...');
+    shell.exec(`${bench_cli} restartnodebenchmarks`,{ silent: true });
+  }
 }
-  
+
 } else {
 tire_lock=0;
 }
@@ -690,21 +810,28 @@ if (mongod_check == ""){
   console.log('MongoDB status = dead');
 
   if (mongod_counter < 4){
-  console.log(data_time_utc+' => MongoDB restarting...');
-  shell.exec("sudo systemctl restart mongod",{ silent: true })
+      if ( typeof action  == "undefined" || action == "1" ){
+          console.log(data_time_utc+' => MongoDB restarting...');
+          shell.exec("sudo systemctl restart mongod",{ silent: true })
+      }
   }
 
   if ( mongod_counter == "1" ){
   error('MongoDB crash detected!');
-  discord_hook("MongoDB crash detected!",web_hook_url);
+  await discord_hook("MongoDB crash detected!",web_hook_url,ping);
   }
 
 } else {
  mongod_counter=0;
 }
 
+ if ( zelcash_height != "" && typeof zelcash_height != "undefined" ){
+  await Check_Sync(zelcash_height);
+ }
+
+
 console.log('============================================================['+zelbench_counter+'/'+zelcashd_counter+']');
-  
+
 }
-setInterval(zeldaemon_check, 170000);
-setInterval(auto_update, 10800000);
+setInterval(zeldaemon_check, 3*60*1000);
+setInterval(auto_update, 120*60*1000);

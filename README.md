@@ -7,17 +7,26 @@
 * Use option "2" for new installation diuring install process anser yes when will ask about watchdog install
 * For existing node installation use option "4"
 
-<b>Watchdog config file:</b>
+
+<b>Watchdog config file (config.js):</b>
 
 ```
 Update settings:
-zelflux_update, zelcash_update, zelbench_update
+zelflux_update - auto update FluxOS
+zelcash_update - auto update Flux Daemon
+zelbench_update - auto update Flux Benchmark
+action - Fixing action (restart mongod, restart daemon, restart benchmark)
+
 0 - option disabled, 1 - option enabled
 
-Discord alert:
+Discord settings:
+web_hook_url - discord hook URL from integration of your discord server
+ping - User discord ID 
+
 0 - disabled
-url set endabled ( ex. https://discord.com/api/webhooks/824918257701614100/6h57eHyqGOUMqc3EXe7u4l-mE2ViJKV2_2IzUQw3u5QziVqx3wmBvqWMSpVr8_PIQ0E5 )
+set value enabled
 ```
+
 <b>Sample config:</b>
 ```
 module.exports = {
@@ -25,6 +34,8 @@ module.exports = {
     zelflux_update: '0',
     zelcash_update: '1',
     zelbench_update: '0',
+    action: '1',
+    ping: '418769606194931713',
     web_hook_url: 'https://discord.com/api/webhooks/844918252704614100/6hB8eHyqGOUMqc7EBe7u4l-sE2ViJKV2_2IzUQw3u0QziVqx3gmBvqWMSpVr8_PIQ0E5'
 }
 ```
@@ -35,6 +46,7 @@ module.exports = {
 * Auto restart when eps drop belown minim. limit for tier
 * Auto restart MongoDB when crash
 * Auto-update supported
+* Discord integration
 * Logs in real time => type "pm2 monit" and select "watchdog"  
 * Log file with error events (~/watchdog/watchdog_error.log)
 
@@ -44,6 +56,8 @@ module.exports = {
 * Restart -> pm2 reload watchdog <b>--watch</b>  
   
 <b>Any donations are welcomed and appreciated. Thanks.</b>  
+<b>https://x4milx.coinrequest.io</b>
+
 ```
 CruxID: k4mil@zel.crux  
 ZEL: t1f66kBo9xzpgPJV6wvzT7MY6unpm42kvST  
