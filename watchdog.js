@@ -528,6 +528,7 @@ console.log('=================================================================')
 
 }
 
+
 async function zeldaemon_check() {
 
   delete require.cache[require.resolve('./config.js')];
@@ -535,6 +536,7 @@ async function zeldaemon_check() {
   web_hook_url = config.web_hook_url;
   action = config.action;
   ping=config.ping;
+
   const service_inactive = shell.exec("systemctl list-units --full -all | grep 'zelcash' | grep -o 'inactive'",{ silent: true }).stdout;
   const data_time_utc = moment.utc().format('YYYY-MM-DD HH:mm:ss');
   const stillUtc = moment.utc(data_time_utc).toDate();
@@ -699,8 +701,7 @@ if (zelbench_benchmark_status == "" || typeof zelbench_benchmark_status == "unde
 
   if (zelbench_benchmark_status == "toaster" || zelbench_benchmark_status  == "failed" ){
     console.log('Benchmark status = '+zelbench_benchmark_status);
-   await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping);
-
+    await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping);
   } else {
     console.log('Benchmark status = '+zelbench_benchmark_status);
   }
