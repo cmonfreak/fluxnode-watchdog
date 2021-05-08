@@ -50,7 +50,7 @@ module.exports = {
 * Log file with error events (~/watchdog/watchdog_error.log)
 * Discord integration
 
-![screen5](https://raw.githubusercontent.com/RunOnFlux/fluxnode-multitool/master/image/discord.png)
+![screen5](https://raw.githubusercontent.com/RunOnFlux/fluxnode-multitool/master/image/discord1.png)
 
 <b>How correct start, stop, restart watchdog</b>
 * Start -> pm2 start watchdog <b>--watch</b> 
