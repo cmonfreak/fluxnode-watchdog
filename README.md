@@ -14,7 +14,7 @@ Update settings:
 zelflux_update - auto update FluxOS
 zelcash_update - auto update Flux Daemon
 zelbench_update - auto update Flux Benchmark
-action - Fixing action (restart mongod, restart daemon, restart benchamrk)
+action - Fixing action (restart mongod, restart daemon, restart benchmark)
 
 0 - option disabled, 1 - option enabled
 
