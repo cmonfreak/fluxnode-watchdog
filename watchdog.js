@@ -11,6 +11,16 @@ console.log('=================================================================')
 
 const path = 'config.js';
 var sync_lock = 0;
+var tire_lock=0;
+var lock_zelback=0;
+var zelcashd_counter=0;
+var zelbench_counter=0;
+var inactive_counter=0;
+var mongod_counter=0;
+var paid_local_time="N/A";
+var expiried_time="N/A";
+var watchdog_sleep="N/A";
+
 
 async function Myip(){
 
@@ -228,17 +238,17 @@ console.log('=================================================================')
 
    switch(Number(type.trim())){
        case 10000:
-       var  tire_name="BASIC";
+       var  tire_name="CUMULUS";
        var eps_limit = 90;
        break;
 
        case 25000:
-       var  tire_name="SUPER";
+       var  tire_name="NIMBUS";
        var eps_limit = 180
        break;
 
        case 100000:
-       var  tire_name="BAMF";
+       var  tire_name="STRATUS";
        var eps_limit = 300
        break;
 
@@ -323,15 +333,6 @@ console.log('=================================================================')
 
 }
 
-var tire_lock=0;
-var lock_zelback=0;
-var zelcashd_counter=0;
-var zelbench_counter=0;
-var inactive_counter=0;
-var mongod_counter=0;
-var paid_local_time="N/A";
-var expiried_time="N/A";
-var watchdog_sleep="N/A";
 
 
 function getFilesizeInBytes(filename) {
