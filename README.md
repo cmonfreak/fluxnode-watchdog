@@ -2,7 +2,7 @@
 <b>How install watchdog:</b>   
 ```bash -i <(curl -s https://raw.githubusercontent.com/RunOnFlux/fluxnode-multitool/master/multitoolbox.sh)```  
 
-![screen2](https://raw.githubusercontent.com/XK4MiLX/zelnode/master/image/w_menu.jpg)
+![screen2](https://raw.githubusercontent.com/RunOnFlux/fluxnode-multitool/master/image/w_menu.jpg)
 
 * Use option "2" for new installation diuring install process anser yes when will ask about watchdog install
 * For existing node installation use option "4"
@@ -46,9 +46,11 @@ module.exports = {
 * Auto restart when eps drop belown minim. limit for tier
 * Auto restart MongoDB when crash
 * Auto-update supported
-* Discord integration
 * Logs in real time => type "pm2 monit" and select "watchdog"  
 * Log file with error events (~/watchdog/watchdog_error.log)
+* Discord integration
+
+![screen5](https://raw.githubusercontent.com/RunOnFlux/fluxnode-multitool/master/image/discord1.png)
 
 <b>How correct start, stop, restart watchdog</b>
 * Start -> pm2 start watchdog <b>--watch</b> 
