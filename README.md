@@ -7,7 +7,7 @@
 * Use option "2" for new installation diuring install process anser yes when will ask about watchdog install
 * For existing node installation use option "4"
 
-<b>Watchdog config file:</b>
+<b>Watchdog config file (config.js):</b>
 
 ```
 Update settings:
