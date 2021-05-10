@@ -707,6 +707,10 @@ lock_zelback=1;
 
   } else {
     console.log('FluxOS status = '+zelback_status);
+    
+    if (  disc_count == 2 ) {
+      await discord_hook("FluxOS connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed1.png'); 
+    }  
     lock_zelback=0;
     disc_count=0;
   }
@@ -775,6 +779,10 @@ if (activesince  == "null" || activesince == "" || typeof activesince == "undefi
 //}
 
 if (typeof zelcash_check !== "undefined" ){
+  
+   if (  zelcashd_counter != 0 ) {
+  await discord_hook("Flux daemon fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed1.png'); 
+  }
   zelcashd_counter=0;
   console.log('Flux daemon status = running');
 }
@@ -817,13 +825,17 @@ if ( mongod_counter == "1" ){
       if ( typeof action  == "undefined" || action == "1" ){
           console.log(data_time_utc+' => MongoDB restarting...');
           shell.exec("sudo systemctl restart mongod",{ silent: true })
-          await discord_hook("MongoDB restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
+          await discord_hook("MongoDB restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fixed1.png');
       }
   }
 
 return;
 } else {
- mongod_counter=0;
+
+ if (  mongod_counter != 0 ) {
+  await discord_hook("MongoDB connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fix1.png'); 
+ }
+  mongod_counter=0;
 }
 
 
