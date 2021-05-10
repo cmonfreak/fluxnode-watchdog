@@ -40,8 +40,10 @@ return MyIP;
 }
 
 
-async function discord_hook(node_error,web_hook_url,ping) {
+async function discord_hook(node_msg,web_hook_url,ping,type,color,title) {
 
+if ( type == "Error") {
+  
   if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
 
       if ( typeof ping == "undefined" || ping == "0") {
@@ -49,10 +51,10 @@ async function discord_hook(node_error,web_hook_url,ping) {
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           const msg = new webhook.MessageBuilder()
           .setName("Flux Watchdog")
-          .setTitle(':loudspeaker: **FluxNode Alert**')
+          .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
-          .addField('Error:', node_error)
-          .setColor('#ea1414')
+          .addField(`${type}:`, node_msg)
+          .setColor(`${color}`)
           .setThumbnail('https://fluxnodeservice.com/favicon.png');
           Hook.send(msg);
       } else {
@@ -60,16 +62,52 @@ async function discord_hook(node_error,web_hook_url,ping) {
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           const msg = new webhook.MessageBuilder()
           .setName("Flux Watchdog")
-          .setTitle(':loudspeaker: **FluxNode Alert**')
+          .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
-          .addField('Error:', node_error)
-          .setColor('#ea1414')
+          .addField(`${type}:`, node_msg)
+          .setColor(`${color}`)
           .setThumbnail('https://fluxnodeservice.com/favicon.png')
           .setText(`Ping: <@${ping}>`);
            Hook.send(msg);
       }
 
    }
+  
+}
+  
+if ( type == "Info") {
+  
+  if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
+
+      if ( typeof ping == "undefined" || ping == "0") {
+          var node_ip = await Myip();
+          const Hook = new webhook.Webhook(`${web_hook_url}`);
+          const msg = new webhook.MessageBuilder()
+          .setName("Flux Watchdog")
+          .setTitle(`:loudspeaker: **FluxNode ${title}**`)
+          .addField('URL:', `http://${node_ip}:16126`)
+          .addField(`${type}:`, node_msg)
+          .setColor(`${color}`)
+          .setThumbnail('https://fluxnodeservice.com/favicon.png');
+          Hook.send(msg);
+      } else {
+          var node_ip = await Myip();
+          const Hook = new webhook.Webhook(`${web_hook_url}`);
+          const msg = new webhook.MessageBuilder()
+          .setName("Flux Watchdog")
+          .setTitle(`:loudspeaker: **FluxNode ${title}**`)
+          .addField('URL:', `http://${node_ip}:16126`)
+          .addField(`${type}:`, node_msg)
+          .setColor(`${color}`)
+          .setThumbnail('https://fluxnodeservice.com/favicon.png')
+          .setText(`Ping: <@${ping}>`);
+           Hook.send(msg);
+      }
+
+   }
+  
+}
+  
 
  }
 
@@ -100,7 +138,7 @@ async function Check_Sync(height) {
     
     console.log(`Flux daemon is not synced (${height}, diff: ${height_diff})`);
     if ( sync_lock == 0 ) {
-       discord_hook(`Flux daemon is not synced!\nDaemon height: **${height}**\nNetwork height: **${explorer_block_height}**\nDiff: **${height_diff}**`,web_hook_url,ping);
+       discord_hook(`Flux daemon is not synced!\nDaemon height: **${height}**\nNetwork height: **${explorer_block_height}**\nDiff: **${height_diff}**`,web_hook_url,ping,'Error',' #ea1414','Alert');
        sync_lock = 1;
     }
     
@@ -387,9 +425,11 @@ if ( remote_version.trim() != "" && local_version.trim() != "" ){
    console.log('Remote version: '+remote_version.trim());
    console.log('=================================================================');
    shell.exec("cd /home/$USER/watchdog && git pull",{ silent: true }).stdout;
-
+   
    var local_ver = shell.exec("jq -r '.version' package.json",{ silent: true }).stdout;
    if ( local_ver.trim() == remote_version.trim() ){
+     
+      await discord_hook(`Fluxnode Watchog updated!\nVersion: **${remote_version}**`,web_hook_url,ping,'Info','#1F8B4C','Update');
       console.log('Update successfully.');
       sleep.sleep(2);
    }
@@ -416,6 +456,7 @@ if (config.zelflux_update == "1") {
        shell.exec("cd /home/$USER/zelflux && git pull",{ silent: true }).stdout;
        var zelflux_lv = shell.exec("jq -r '.version' /home/$USER/zelflux/package.json",{ silent: true }).stdout;
        if ( zelflux_remote_version.trim() == zelflux_lv.trim() ) {
+         await discord_hook(`FluxOS updated!\nVersion: **${zelflux_remote_version}**`,web_hook_url,ping,'Info','#1F8B4C','Update');
           console.log('Update successfully.');
           sleep.sleep(2);
         }
@@ -460,10 +501,12 @@ console.log(`Flux daemon current: ${zelcash_remote_version.trim()} installed: ${
      sleep.sleep(2);
      shell.exec("sudo systemctl start zelcash",{ silent: true })
 
-       if ( (zelcash_dpkg_version_before !== zelcash_dpkg_version_after) && zelcash_dpkg_version_after != "" ){
+       if ( (zelcash_dpkg_version_before !== zelcash_dpkg_version_after) && zelcash_dpkg_version_after != "" ){    
+          await discord_hook(`Fluxnode daemon updated!\nVersion: **${zelcash_dpkg_version_after}**`,web_hook_url,ping,'Info','#1F8B4C','Update');
           console.log('Update successfully.');
           console.log(' ');
           sleep.sleep(2);
+         
        } else {
          console.log('Script called.');
          console.log(' ');
@@ -511,6 +554,7 @@ if (config.zelbench_update == "1") {
    var zelbench_dpkg_version_after = shell.exec(`dpkg -l fluxbench | grep -w fluxbench | awk '{print $3}'`,{ silent: true }).stdout;
 
      if ( (zelbench_dpkg_version_before !== zelbench_dpkg_version_after) && zelbench_dpkg_version_after != "" ){
+       await discord_hook(`Fluxnode benchmark updated!\nVersion: **${zelbench_dpkg_version_after}**`,web_hook_url,ping,'Info','#1F8B4C','Update');
         console.log('Update successfully.');
         console.log(' ');
         sleep.sleep(2);
@@ -555,9 +599,11 @@ if ( update_info > 2 ) {
 }
 
 if ( service_inactive.trim() == "inactive" ) {
+  
   console.log('Flux daemon service status: inactive');
   console.log('Watchdog in sleep mode => '+data_time_utc);
   ++inactive_counter;
+  
   console.log('============================================================['+inactive_counter+']');
   if ( inactive_counter > 6 ) {
      shell.exec("sudo fuser -k 16125/tcp",{ silent: true })
@@ -656,7 +702,7 @@ if (zelcash_node_status == "" || typeof zelcash_node_status == "undefined" ){
     if (expiried_time != "1"){
     expiried_time="1";
     error('Fluxnode expired => UTC: '+data_time_utc+' | LOCAL: '+local);
-    await discord_hook('Fluxnode expired\nUTC: '+data_time_utc+'\nLOCAL: '+local,web_hook_url,ping);
+    await discord_hook('Fluxnode expired\nUTC: '+data_time_utc+'\nLOCAL: '+local,web_hook_url,ping,'Error','#ea1414','Alert');
     }
 
    }
@@ -674,7 +720,7 @@ if (zelback_status == "" || typeof zelback_status == "undefined"){
     console.log('FluxOS status = '+zelback_status);
     if ( lock_zelback != "1" ) {
     error('FluxOS disconnected!');
-    await discord_hook("FluxOS disconnected!",web_hook_url,ping);
+    await discord_hook("FluxOS disconnected!",web_hook_url,ping,'Error','#ea1414','Alert');
     lock_zelback=1;
     }
   } else {
@@ -701,7 +747,7 @@ if (zelbench_benchmark_status == "" || typeof zelbench_benchmark_status == "unde
 
   if (zelbench_benchmark_status == "toaster" || zelbench_benchmark_status  == "failed" ){
     console.log('Benchmark status = '+zelbench_benchmark_status);
-    await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping);
+    await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping,'Error','#ea1414','Alert');
   } else {
     console.log('Benchmark status = '+zelbench_benchmark_status);
   }
@@ -756,7 +802,7 @@ else {
 
    if ( zelcashd_counter == "1" ){
       error('Flux daemon crash detected!');
-     await discord_hook("Flux daemon crash detected!",web_hook_url,ping);
+     await discord_hook("Flux daemon crash detected!",web_hook_url,ping,'Error','#ea1414','Alert');
    }
 
    if ( typeof action  == "undefined" || action == "1" ){
@@ -765,6 +811,7 @@ else {
       shell.exec("sudo fuser -k 16125/tcp",{ silent: true });
       shell.exec("sudo systemctl start zelcash",{ silent: true });
       console.log(data_time_utc+' => Flux daemon restarting...');
+      await discord_hook("Daemon restarted!",web_hook_url,ping,'Info','#FFFF00','Fix Action');
    }
 
 }
@@ -779,6 +826,7 @@ if ( zelbench_benchmark_status == "toaster" || zelbench_benchmark_status == "fai
   if ( typeof action  == "undefined" || action == "1" ){
     console.log(data_time_utc+' => Fluxbench restarting...');
     shell.exec(`${bench_cli} restartnodebenchmarks`,{ silent: true });
+    await discord_hook("Benchmark restarted!",web_hook_url,ping,'Info','#FFFF00','Fix Action');
   }
 }
 else{
@@ -797,6 +845,7 @@ console.log('CPU eps under minimum limit for '+tire_name+'('+eps_limit+'), curre
   if ( typeof action  == "undefined" || action == "1" ){
     console.log(data_time_utc+' => Fluxbench restarting...');
     shell.exec(`${bench_cli} restartnodebenchmarks`,{ silent: true });
+    await discord_hook("Benchmark restarted!",web_hook_url,ping,'Info','#FFFF00','Fix Action');
   }
 }
 
@@ -813,12 +862,13 @@ if (mongod_check == ""){
       if ( typeof action  == "undefined" || action == "1" ){
           console.log(data_time_utc+' => MongoDB restarting...');
           shell.exec("sudo systemctl restart mongod",{ silent: true })
+          await discord_hook("MongoDB restarted!",web_hook_url,ping,'Info','#FFFF00','Fix Action');
       }
   }
 
   if ( mongod_counter == "1" ){
   error('MongoDB crash detected!');
-  await discord_hook("MongoDB crash detected!",web_hook_url,ping);
+  await discord_hook("MongoDB crash detected!",web_hook_url,ping,'Error','#ea1414','Alert');
   }
 
 } else {
@@ -834,4 +884,4 @@ console.log('============================================================['+zelb
 
 }
 setInterval(zeldaemon_check, 3*60*1000);
-setInterval(auto_update, 120*60*1000);
+setInterval(auto_update, 2*60*1000);
