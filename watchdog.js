@@ -560,10 +560,6 @@ if ( update_info > 2 ) {
   return;
 }
 
-
-// await discord_hook("MongoDB connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
-
-
 if ( service_inactive.trim() == "inactive" ) {
 
   console.log('Flux daemon service status: inactive');
@@ -660,9 +656,6 @@ try{
 }
 
 const mongod_check = shell.exec("pgrep mongod",{ silent: true }).stdout;
-
-
-
 
 
 if (zelcash_node_status == "" || typeof zelcash_node_status == "undefined" ){
@@ -776,11 +769,6 @@ if (activesince  == "null" || activesince == "" || typeof activesince == "undefi
   const active_local_time = timestamp_active.format("DD/MM/YYYY HH:mm:ss")
   console.log('Active since = '+active_local_time);
 }
-
-//if (zelbench_ddwrite == "" || typeof zelbench_ddwrite == "undefined"){
-//} else{
- // console.log('Disk write speed = '+Number(zelbench_ddwrite).toFixed(2));
-//}
 
 if (typeof zelcash_check !== "undefined" ){
 
