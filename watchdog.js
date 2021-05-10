@@ -560,6 +560,10 @@ if ( update_info > 2 ) {
   return;
 }
 
+
+// await discord_hook("MongoDB connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
+
+
 if ( service_inactive.trim() == "inactive" ) {
 
   console.log('Flux daemon service status: inactive');
@@ -707,10 +711,10 @@ lock_zelback=1;
 
   } else {
     console.log('FluxOS status = '+zelback_status);
-    
+
     if (  disc_count == 2 ) {
-      await discord_hook("FluxOS connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed1.png'); 
-    }  
+      await discord_hook("FluxOS connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
+    }
     lock_zelback=0;
     disc_count=0;
   }
@@ -734,7 +738,7 @@ if (zelbench_benchmark_status == "" || typeof zelbench_benchmark_status == "unde
 
   if (zelbench_benchmark_status == "toaster" || zelbench_benchmark_status  == "failed" ){
     console.log('Benchmark status = '+zelbench_benchmark_status);
-    await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping,'Alert',' #EA1414','Error','watchdog_error1.png');
+    await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
   } else {
     console.log('Benchmark status = '+zelbench_benchmark_status);
   }
@@ -779,9 +783,9 @@ if (activesince  == "null" || activesince == "" || typeof activesince == "undefi
 //}
 
 if (typeof zelcash_check !== "undefined" ){
-  
+
    if (  zelcashd_counter != 0 ) {
-  await discord_hook("Flux daemon fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed1.png'); 
+  await discord_hook("Flux daemon fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
   }
   zelcashd_counter=0;
   console.log('Flux daemon status = running');
@@ -833,7 +837,7 @@ return;
 } else {
 
  if (  mongod_counter != 0 ) {
-  await discord_hook("MongoDB connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed1.png'); 
+  await discord_hook("MongoDB connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
  }
   mongod_counter=0;
 }
@@ -856,6 +860,10 @@ if ( zelbench_benchmark_status == "toaster" || zelbench_benchmark_status == "fai
   }
 }
 else{
+
+ if ( zelbench_counter != 0 ) {
+  await discord_hook("Flux benchmark fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
+ }
 zelbench_counter=0;
 }
 
