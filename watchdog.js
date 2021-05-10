@@ -825,7 +825,7 @@ if ( mongod_counter == "1" ){
       if ( typeof action  == "undefined" || action == "1" ){
           console.log(data_time_utc+' => MongoDB restarting...');
           shell.exec("sudo systemctl restart mongod",{ silent: true })
-          await discord_hook("MongoDB restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fixed1.png');
+          await discord_hook("MongoDB restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
       }
   }
 
@@ -833,7 +833,7 @@ return;
 } else {
 
  if (  mongod_counter != 0 ) {
-  await discord_hook("MongoDB connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fix1.png'); 
+  await discord_hook("MongoDB connection fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed1.png'); 
  }
   mongod_counter=0;
 }
