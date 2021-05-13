@@ -92,18 +92,19 @@ async function Check_Sync(height) {
   var explorer_block_height_03 = await shell.exec(`${exec_comment3}`,{ silent: true }).stdout;
   var explorer_block_height = max(explorer_block_height_01,explorer_block_height_02,explorer_block_height_03);
   var height_diff = Math.abs(explorer_block_height-height);
+  
 
-  if ( height_diff < 12 && sync_lock == 0 ) {
+  if ( height_diff < 12 ) {
     
-    if ( sync_lock != 0 ) {
+     if ( sync_lock != 0 ) {
       
-      if ( typeof action  == "undefined" || action == "1" ){
+        if ( typeof action  == "undefined" || action == "1" ){
         
-         await discord_hook("Flux daemon is synced!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
+           await discord_hook("Flux daemon is synced!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
         
-      }
+        }
       
-    }
+     }
     
     console.log(`Flux daemon is synced (${height}, diff: ${height_diff})`);
     sync_lock = 0;
