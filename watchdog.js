@@ -6,7 +6,7 @@ const fs = require('fs');
 
 
 sleep.sleep(15);
-console.log('Watchdog v5.1.0 Starting...');
+console.log('Watchdog v5.2.0 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
