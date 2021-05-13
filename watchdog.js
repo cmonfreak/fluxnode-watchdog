@@ -143,11 +143,14 @@ if (fs.existsSync(path)) {
   var  zelcash_path = `${home_dir.trim()}/.zelcash/zelcash.conf`;
   var daemon_cli='zelcash-cli';
   var daemon_package_name='zelcash';
+  
+  if (fs.existsSync(`/usr/local/bin/flux-cli`)) {
+     daemon_cli='flux-cli';
+     daemon_package_name='flux';
+  }
 
   if (!fs.existsSync(zelcash_path)) {
      zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;
-     daemon_cli='flux-cli';
-     daemon_package_name='flux';
    }
 
 
@@ -243,11 +246,14 @@ console.log('=================================================================')
   var  zelcash_path = `${home_dir.trim()}/.zelcash/zelcash.conf`;
   var daemon_cli='zelcash-cli';
   var daemon_package_name='zelcash';
+  
+  if (fs.existsSync(`/usr/local/bin/flux-cli`)) {
+     daemon_cli='flux-cli';
+     daemon_package_name='flux';
+  }
 
   if (!fs.existsSync(zelcash_path)) {
      zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;
-     daemon_cli='flux-cli';
-     daemon_package_name='flux';
    }
 
 
