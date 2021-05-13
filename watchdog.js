@@ -6,7 +6,7 @@ const fs = require('fs');
 
 
 sleep.sleep(15);
-console.log('Watchdog v5.1.0 Starting...');
+console.log('Watchdog v5.2.0 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -92,16 +92,45 @@ async function Check_Sync(height) {
   var explorer_block_height_03 = await shell.exec(`${exec_comment3}`,{ silent: true }).stdout;
   var explorer_block_height = max(explorer_block_height_01,explorer_block_height_02,explorer_block_height_03);
   var height_diff = Math.abs(explorer_block_height-height);
+  
 
-  if ( height_diff < 10 && sync_lock == 0 ) {
+  if ( height_diff < 12 ) {
+    
+     if ( sync_lock != 0 ) {
+      
+        if ( typeof action  == "undefined" || action == "1" ){
+        
+           await discord_hook("Flux daemon is synced!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
+        
+        }
+      
+     }
+    
     console.log(`Flux daemon is synced (${height}, diff: ${height_diff})`);
     sync_lock = 0;
+    
+    
+    
   } else {
 
     console.log(`Flux daemon is not synced (${height}, diff: ${height_diff})`);
     if ( sync_lock == 0 ) {
+      
        await discord_hook(`Flux daemon is not synced!\nDaemon height: **${height}**\nNetwork height: **${explorer_block_height}**\nDiff: **${height_diff}**`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
-       sync_lock = 1;
+       
+       if ( typeof action  == "undefined" || action == "1" ){
+  
+         
+         shell.exec("sudo systemctl stop zelcash",{ silent: true });
+         sleep.sleep(2);
+         shell.exec("sudo fuser -k 16125/tcp",{ silent: true });
+         shell.exec("sudo systemctl start zelcash",{ silent: true });
+         console.log(data_time_utc+' => Flux daemon restarting...');
+         await discord_hook("Flux daemon restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
+         
+       }
+      
+      sync_lock = 1;
     }
 
   }
@@ -114,11 +143,14 @@ if (fs.existsSync(path)) {
   var  zelcash_path = `${home_dir.trim()}/.zelcash/zelcash.conf`;
   var daemon_cli='zelcash-cli';
   var daemon_package_name='zelcash';
+  
+  if (fs.existsSync(`/usr/local/bin/flux-cli`)) {
+     daemon_cli='flux-cli';
+     daemon_package_name='flux';
+  }
 
   if (!fs.existsSync(zelcash_path)) {
      zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;
-     daemon_cli='flux-cli';
-     daemon_package_name='flux';
    }
 
 
@@ -214,11 +246,14 @@ console.log('=================================================================')
   var  zelcash_path = `${home_dir.trim()}/.zelcash/zelcash.conf`;
   var daemon_cli='zelcash-cli';
   var daemon_package_name='zelcash';
+  
+  if (fs.existsSync(`/usr/local/bin/flux-cli`)) {
+     daemon_cli='flux-cli';
+     daemon_package_name='flux';
+  }
 
   if (!fs.existsSync(zelcash_path)) {
      zelcash_path = `${home_dir.trim()}/.flux/flux.conf`;
-     daemon_cli='flux-cli';
-     daemon_package_name='flux';
    }
 
 
@@ -795,7 +830,7 @@ else {
       shell.exec("sudo fuser -k 16125/tcp",{ silent: true });
       shell.exec("sudo systemctl start zelcash",{ silent: true });
       console.log(data_time_utc+' => Flux daemon restarting...');
-      await discord_hook("Daemon restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
+      await discord_hook("Flux daemon restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
    }
 
 }
