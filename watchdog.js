@@ -38,7 +38,7 @@ async function Myip(){
 
   }
   
-  if ( MyIP != "" )  
+  if ( MyIP != "" ){ 
     h_IP=MyIP;
     console.log(`Saved IP for historical usage.`);
   }
@@ -105,8 +105,7 @@ async function Check_Sync(height) {
   var explorer_block_height = max(explorer_block_height_01,explorer_block_height_02,explorer_block_height_03);
   var height_diff = Math.abs(explorer_block_height-height);
   
-  if ( explorer_block_height == 0 )   
-  {
+  if ( explorer_block_height == 0 ) {
     console.log(`Info: Flux network height unavailable! Check Skipped...`);
     return;
   }
