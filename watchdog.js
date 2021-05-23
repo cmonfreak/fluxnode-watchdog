@@ -21,6 +21,7 @@ var paid_local_time="N/A";
 var expiried_time="N/A";
 var watchdog_sleep="N/A";
 var disc_count = 0;
+var h_IP=0;
 
 async function Myip(){
 
@@ -29,13 +30,22 @@ async function Myip(){
 
   for (const [index, val] of check_list.entries()) {
 
-     MyIP = await shell.exec(`curl -sk -m 5 https://${val} | tr -dc '[:alnum:].'`,{ silent: true }).stdout;
+     MyIP = await shell.exec(`curl -sk -m 10 https://${val} | tr -dc '[:alnum:].'`,{ silent: true }).stdout;
 
      if ( MyIP.length > 5){
         break;
      }
 
   }
+  
+  if ( MyIP != "" )  
+    h_IP=MyIP;    
+  }
+
+  if ( MyIP == "" ){
+    MyIP=h_IP;
+  }
+  
 return MyIP;
 }
 
@@ -92,6 +102,12 @@ async function Check_Sync(height) {
   var explorer_block_height_03 = await shell.exec(`${exec_comment3}`,{ silent: true }).stdout;
   var explorer_block_height = max(explorer_block_height_01,explorer_block_height_02,explorer_block_height_03);
   var height_diff = Math.abs(explorer_block_height-height);
+  
+  if ( explorer_block_height == 0 )   
+  {
+    console.log(`Flux network height unavailable!`);
+    return;
+  }
   
 
   if ( height_diff < 12 ) {
