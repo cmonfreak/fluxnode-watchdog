@@ -39,11 +39,13 @@ async function Myip(){
   }
   
   if ( MyIP != "" )  
-    h_IP=MyIP;    
+    h_IP=MyIP;
+    console.log(`Saved IP for historical usage.`);
   }
 
   if ( MyIP == "" ){
     MyIP=h_IP;
+    console.log(`Info: Historical IP used.`);
   }
   
 return MyIP;
@@ -105,7 +107,7 @@ async function Check_Sync(height) {
   
   if ( explorer_block_height == 0 )   
   {
-    console.log(`Flux network height unavailable!`);
+    console.log(`Info: Flux network height unavailable! Check Skipped...`);
     return;
   }
   
