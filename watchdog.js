@@ -6,7 +6,7 @@ const fs = require('fs');
 
 
 sleep.sleep(15);
-console.log('Watchdog v5.2.0 Starting...');
+console.log('Watchdog v5.2.1 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -40,7 +40,7 @@ async function Myip(){
   
   if ( MyIP != "" ){ 
     h_IP=MyIP;
-    console.log(`Saved IP for historical usage.`);
+    // console.log(`Saved IP for historical usage.`);
   }
 
   if ( MyIP == "" ){
