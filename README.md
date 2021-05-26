@@ -25,6 +25,12 @@ ping - User discord ID
 
 0 - disabled
 set value enabled
+
+Telegram settings:
+telegram_alert - telegram mode flage ( 1 - enabled , 0 - disabled )
+telegram_bot_token - bot token from BotFather
+telegram_chat_id - chat id from GetIDs Bot
+
 ```
 
 <b>Sample config:</b>
@@ -36,7 +42,10 @@ module.exports = {
     zelbench_update: '0',
     action: '1',
     ping: '418769606194931713',
-    web_hook_url: 'https://discord.com/api/webhooks/844918252704614100/6hB8eHyqGOUMqc7EBe7u4l-sE2ViJKV2_2IzUQw3u0QziVqx3gmBvqWMSpVr8_PIQ0E5'
+    web_hook_url: 'https://discord.com/api/webhooks/844918252704614100/6hB8eHyqGOUMqc7EBe7u4l-sE2ViJKV2_2IzUQw3u0QziVqx3gmBvqWMSpVr8_PIQ0E5',
+    telegram_alert: '1',
+    telegram_bot_token: '1976199557:AAEgG5sjq2Zy4aAWK-Kw-gWm4yG4vBHb-2a',
+    telegram_chat_id: '385527082'
 }
 ```
 
@@ -51,6 +60,10 @@ module.exports = {
 * Discord integration
 
 ![screen5](https://raw.githubusercontent.com/RunOnFlux/fluxnode-multitool/master/image/discord1.png)
+
+* Telegram integration
+
+![screen6](https://fluxnodeservice.com/telegram.png)
 
 <b>How correct start, stop, restart watchdog</b>
 * Start -> pm2 start watchdog <b>--watch</b> 
