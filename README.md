@@ -62,6 +62,7 @@ module.exports = {
 ![screen5](https://raw.githubusercontent.com/RunOnFlux/fluxnode-multitool/master/image/discord1.png)
 
 * Telegram integration
+
 ![screen6](https://fluxnodeservice.com/telegram.png)
 
 <b>How correct start, stop, restart watchdog</b>
