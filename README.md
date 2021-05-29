@@ -28,8 +28,8 @@ set value enabled
 
 Telegram settings:
 telegram_alert - telegram mode flage ( 1 - enabled , 0 - disabled )
-telegram_bot_token - bot token from BotFather
-telegram_chat_id - chat id from GetIDs Bot
+telegram_bot_token - bot token from BotFather ( dm BotFather /newbot for token more option /start )
+telegram_chat_id - chat id from GetIDs Bot ( dm GetIDs Bot /start to get your chat id )
 
 ```
 
