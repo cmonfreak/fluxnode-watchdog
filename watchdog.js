@@ -24,6 +24,7 @@ var expiried_time="N/A";
 var watchdog_sleep="N/A";
 var disc_count = 0;
 var h_IP=0;
+var component_update=0;
 
 
 async function Myip(){
@@ -545,6 +546,7 @@ if (config.zelflux_update == "1") {
    if ( zelflux_remote_version.trim() != "" && zelflux_local_version.trim() != "" ){
 
      if ( zelflux_remote_version.trim() !== zelflux_local_version.trim() ){
+       component_update = 1;
        console.log('New FluxOS version detected:');
        console.log('=================================================================');
        console.log('Local version: '+zelflux_local_version.trim());
@@ -584,6 +586,7 @@ console.log(`Flux daemon current: ${zelcash_remote_version.trim()} installed: ${
  if ( zelcash_remote_version.trim() != "" && zelcash_local_version.trim() != "" ){
 
    if ( zelcash_remote_version.trim() !== zelcash_local_version.trim() ){
+     component_update = 1;
      console.log('New Flux daemon version detected:');
      console.log('=================================================================');
      console.log('Local version: '+zelcash_local_version.trim());
@@ -645,6 +648,7 @@ if (config.zelbench_update == "1") {
   if ( zelbench_remote_version.trim() != "" && zelbench_local_version.trim() != "" ){
 
     if ( zelbench_remote_version.trim() !== zelbench_local_version.trim() ){
+     component_update = 1;
      console.log('New Fluxbench version detected:');
      console.log('=================================================================');
      console.log('Local version: '+zelbench_local_version.trim());
@@ -707,7 +711,7 @@ async function zeldaemon_check() {
   web_hook_url = config.web_hook_url;
   action = config.action;
   ping=config.ping;
-
+  
 
   const service_inactive = shell.exec("systemctl list-units --full -all | grep 'zelcash' | grep -o 'inactive'",{ silent: true }).stdout;
   const data_time_utc = moment.utc().format('YYYY-MM-DD HH:mm:ss');
@@ -742,7 +746,15 @@ if ( service_inactive.trim() == "inactive" ) {
    }
 }
 
-
+if ( component_update == 1 ) {
+    console.log('Component update detected!');
+    console.log('Watchdog checking skipped!);
+    console.log('=================================================================');          
+    component_update = 0;
+    return;
+ }
+  
+ 
 if ( zelbench_counter > 2 || zelcashd_counter > 2 ){
 
   try{
