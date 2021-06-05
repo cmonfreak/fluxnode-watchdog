@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 sleep.sleep(15);
 
 
-console.log('Watchdog v5.3.0 Starting...');
+console.log('Watchdog v5.3.1 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -498,7 +498,7 @@ async function auto_update() {
 
  delete require.cache[require.resolve('./config.js')];
  var config = require('./config.js');
- var remote_version = shell.exec("curl -sS https://raw.githubusercontent.com/RunOnFlux/fluxnode-watchdog/master/package.json | jq -r '.version'",{ silent: true }).stdout;
+ var remote_version = shell.exec("curl -sS -m 5 https://raw.githubusercontent.com/RunOnFlux/fluxnode-watchdog/master/package.json | jq -r '.version'",{ silent: true }).stdout;
  var local_version = shell.exec("jq -r '.version' package.json",{ silent: true }).stdout;
 
 console.log(' UPDATE CHECKING....');
@@ -539,7 +539,7 @@ if ( remote_version.trim() != "" && local_version.trim() != "" ){
 
 if (config.zelflux_update == "1") {
 
-   var zelflux_remote_version = shell.exec("curl -sS https://raw.githubusercontent.com/zelcash/zelflux/master/package.json | jq -r '.version'",{ silent: true }).stdout;
+   var zelflux_remote_version = shell.exec("curl -sS -m 5 https://raw.githubusercontent.com/RunOnFlux/flux/master/package.json | jq -r '.version'",{ silent: true }).stdout;
    var zelflux_local_version = shell.exec("jq -r '.version' /home/$USER/zelflux/package.json",{ silent: true }).stdout;
 
    console.log(`FluxOS current: ${zelflux_remote_version.trim()} installed: ${zelflux_local_version.trim()}`);
