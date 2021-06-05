@@ -748,7 +748,7 @@ if ( service_inactive.trim() == "inactive" ) {
 
 if ( component_update == 1 ) {
     console.log('Component update detected!');
-    console.log('Watchdog checking skipped!);
+    console.log('Watchdog checking skipped!');
     console.log('=================================================================');          
     component_update = 0;
     return;
