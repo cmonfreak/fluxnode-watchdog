@@ -448,15 +448,9 @@ async function send_telegram_msg(emoji_title,info_type,field_type,msg_text) {
     const node_ip = await Myip();
     const token = config.telegram_bot_token;
     const chatId = config.telegram_chat_id;
-    const bot = new TelegramBot(token, {polling: true});
+    const bot = new TelegramBot(token, {polling: false});
 
     bot.sendMessage(chatId, emoji_title+'<b> FluxNode Watchdog </b>'+emoji_title+'<pre>------------------------\n</pre><b>Type: </b>'+info_type+'<pre>\n</pre><b>URL:</b> http://'+node_ip+':16126<pre>\n</pre><b>'+field_type+'</b>'+msg_text,{parse_mode: 'HTML'});
-
-    if(bot.isPolling())
-    {
-       await bot.stopPolling();
-    }
-
 
   }
 
