@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 sleep.sleep(15);
 
 
-console.log('Watchdog v5.3.0 Starting...');
+console.log('Watchdog v5.3.1 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -24,6 +24,7 @@ var expiried_time="N/A";
 var watchdog_sleep="N/A";
 var disc_count = 0;
 var h_IP=0;
+var component_update=0;
 
 
 async function Myip(){
@@ -447,15 +448,9 @@ async function send_telegram_msg(emoji_title,info_type,field_type,msg_text) {
     const node_ip = await Myip();
     const token = config.telegram_bot_token;
     const chatId = config.telegram_chat_id;
-    const bot = new TelegramBot(token, {polling: true});
+    const bot = new TelegramBot(token, {polling: false});
 
     bot.sendMessage(chatId, emoji_title+'<b> FluxNode Watchdog </b>'+emoji_title+'<pre>------------------------\n</pre><b>Type: </b>'+info_type+'<pre>\n</pre><b>URL:</b> http://'+node_ip+':16126<pre>\n</pre><b>'+field_type+'</b>'+msg_text,{parse_mode: 'HTML'});
-
-    if(bot.isPolling())
-    {
-       await bot.stopPolling();
-    }
-
 
   }
 
@@ -497,7 +492,7 @@ async function auto_update() {
 
  delete require.cache[require.resolve('./config.js')];
  var config = require('./config.js');
- var remote_version = shell.exec("curl -sS https://raw.githubusercontent.com/RunOnFlux/fluxnode-watchdog/master/package.json | jq -r '.version'",{ silent: true }).stdout;
+ var remote_version = shell.exec("curl -sS -m 5 https://raw.githubusercontent.com/RunOnFlux/fluxnode-watchdog/master/package.json | jq -r '.version'",{ silent: true }).stdout;
  var local_version = shell.exec("jq -r '.version' package.json",{ silent: true }).stdout;
 
 console.log(' UPDATE CHECKING....');
@@ -538,13 +533,14 @@ if ( remote_version.trim() != "" && local_version.trim() != "" ){
 
 if (config.zelflux_update == "1") {
 
-   var zelflux_remote_version = shell.exec("curl -sS https://raw.githubusercontent.com/zelcash/zelflux/master/package.json | jq -r '.version'",{ silent: true }).stdout;
+   var zelflux_remote_version = shell.exec("curl -sS -m 5 https://raw.githubusercontent.com/RunOnFlux/flux/master/package.json | jq -r '.version'",{ silent: true }).stdout;
    var zelflux_local_version = shell.exec("jq -r '.version' /home/$USER/zelflux/package.json",{ silent: true }).stdout;
 
    console.log(`FluxOS current: ${zelflux_remote_version.trim()} installed: ${zelflux_local_version.trim()}`);
    if ( zelflux_remote_version.trim() != "" && zelflux_local_version.trim() != "" ){
 
      if ( zelflux_remote_version.trim() !== zelflux_local_version.trim() ){
+       component_update = 1;
        console.log('New FluxOS version detected:');
        console.log('=================================================================');
        console.log('Local version: '+zelflux_local_version.trim());
@@ -584,6 +580,7 @@ console.log(`Flux daemon current: ${zelcash_remote_version.trim()} installed: ${
  if ( zelcash_remote_version.trim() != "" && zelcash_local_version.trim() != "" ){
 
    if ( zelcash_remote_version.trim() !== zelcash_local_version.trim() ){
+     component_update = 1;
      console.log('New Flux daemon version detected:');
      console.log('=================================================================');
      console.log('Local version: '+zelcash_local_version.trim());
@@ -645,6 +642,7 @@ if (config.zelbench_update == "1") {
   if ( zelbench_remote_version.trim() != "" && zelbench_local_version.trim() != "" ){
 
     if ( zelbench_remote_version.trim() !== zelbench_local_version.trim() ){
+     component_update = 1;
      console.log('New Fluxbench version detected:');
      console.log('=================================================================');
      console.log('Local version: '+zelbench_local_version.trim());
@@ -707,7 +705,7 @@ async function zeldaemon_check() {
   web_hook_url = config.web_hook_url;
   action = config.action;
   ping=config.ping;
-
+  
 
   const service_inactive = shell.exec("systemctl list-units --full -all | grep 'zelcash' | grep -o 'inactive'",{ silent: true }).stdout;
   const data_time_utc = moment.utc().format('YYYY-MM-DD HH:mm:ss');
@@ -742,7 +740,15 @@ if ( service_inactive.trim() == "inactive" ) {
    }
 }
 
-
+if ( component_update == 1 ) {
+    console.log('Component update detected!');
+    console.log('Watchdog checking skipped!');
+    console.log('=================================================================');          
+    component_update = 0;
+    return;
+ }
+  
+ 
 if ( zelbench_counter > 2 || zelcashd_counter > 2 ){
 
   try{
