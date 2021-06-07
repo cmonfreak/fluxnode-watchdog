@@ -37,13 +37,13 @@ async function jobe_creator(){
   ++job_count;
 
   if ( job_count%120 == 0 ) {
-    auto_update();
+    await auto_update();
   }
   if ( job_count%4   == 0 ) {
-    zeldaemon_check();
+    await zeldaemon_check();
   }
   if ( job_count%16 == 0 ) {
-    kda_check();
+    await kda_check();
   }
   
   // reset counter 
