@@ -37,7 +37,7 @@ async function jobe_creator(){
   ++job_count;
 
   if ( job_count%120 == 0 ) {
-    await auto_update();
+   await  auto_update();
   }
   if ( job_count%4   == 0 ) {
     await zeldaemon_check();
@@ -45,8 +45,7 @@ async function jobe_creator(){
   if ( job_count%16 == 0 ) {
     await kda_check();
   }
-  
-  // reset counter 
+  // reset job count
    if ( job_count%120 == 0 ) {
     job_count = 0;
   }
@@ -120,14 +119,13 @@ kadenaData3 = kadenaData3.data.height;
 
 async function kda_check(){
 
-
 let kda_docker_check = await shell.exec(`docker ps --filter name=zelKadenaChainWebNode | wc -l`,{ silent: true }).stdout;
 
 if ( kda_docker_check != 2 ){
-console.log(`Info: KDA docker apps not detected!...check skipped`);
+console.log(`KDA docker apps not detected!`);
+console.log(`Check skipped...`);
+console.log('=================================================================');
 return;
-} else {
- console.log(`Info: KDA docker detected! checking...`);
 }
 
   let ip = await Myip();
@@ -288,7 +286,7 @@ return;
   }
 
   let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
-  console.log(`KDA docker status: ${docker_status}`);
+  console.log(`KDA docker status: ${docker_status.trim()}`);
   console.log('=================================================================');
 
 }
