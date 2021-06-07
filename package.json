@@ -1,9 +1,11 @@
 {
   "name": "watchdog",
-  "version": "5.3.1",
+  "version": "5.4.0",
   "description": "Watchdog for fluxnode",
   "main": "watchdog.js",
   "dependencies": {
+    "axios": "^0.21.1",
+    "https": "^1.0.0",
     "fs": "0.0.1-security",
     "moment": "^2.24.0",
     "path": "^0.12.7",
