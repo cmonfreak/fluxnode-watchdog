@@ -48,7 +48,6 @@ async function getKadenaNodeHeight(ip) {
 }
 
 
-
 async function getKadenaNetworkHeight() {
 
   try {
@@ -100,17 +99,14 @@ kadenaData3 = kadenaData3.data.height;
 
 async function kda_check(){
 
-
-let kda_docker_check = await shell.exec(`docker ps --filter name=zelKadenaChainWebNode | wc -l`,{ silent: true }).stdout;
-
-if ( kda_docker_check != 2 ){
-console.log(`Info: KDA docker apps not detected!...check skipped`);
-return;
-} else {
- console.log(`Info: KDA docker detected! checking...`);
-}
-
-
+  let kda_docker_check = await shell.exec(`docker ps --filter name=zelKadenaChainWebNode | wc -l`,{ silent: true }).stdout;
+  
+  if ( kda_docker_check != 2 ){
+    console.log(`Info: KDA docker apps not detected!...check skipped`);
+    return;
+  } else {
+   console.log(`Info: KDA docker detected! checking...`);
+  }
 
   let ip = await Myip();
   let height = await getKadenaNodeHeight(ip);
