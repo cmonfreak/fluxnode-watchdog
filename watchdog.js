@@ -38,7 +38,6 @@ async function jobe_creator(){
 
   if ( job_count%120 == 0 ) {
     auto_update();
-    job_count = 0;
   }
   if ( job_count%4   == 0 ) {
     zeldaemon_check();
@@ -46,7 +45,12 @@ async function jobe_creator(){
   if ( job_count%16 == 0 ) {
     kda_check();
   }
-
+  
+  // reset counter 
+   if ( job_count%120 == 0 ) {
+    job_count = 0;
+  }
+  
 }
 
 async function getKadenaNodeHeight(ip) {
