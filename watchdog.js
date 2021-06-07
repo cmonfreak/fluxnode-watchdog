@@ -8,8 +8,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-
-
 console.log('Watchdog v5.4.0 Starting...');
 console.log('=================================================================');
 
@@ -32,6 +30,7 @@ var historic_height = 0;
 var kda_lock=0;
 var no_sync = 0;
 var not_responding = 0;
+
 
 async function getKadenaNodeHeight(ip) {
   try {
@@ -90,7 +89,7 @@ kadenaData3 = kadenaData3.data.height;
      //console.log(`Connection 3 ${e}`);
   }
 
-    console.log("Bootstrap node height: "+ kadenaData1 + " " +  kadenaData2 + " " + kadenaData3);
+//    console.log("Bootstrap node height: "+ kadenaData1 + " " +  kadenaData2 + " " + kadenaData3);
     let kadenaData = max(Number(kadenaData1), Number(kadenaData2), Number(kadenaData3));
     return kadenaData;
 
@@ -99,14 +98,15 @@ kadenaData3 = kadenaData3.data.height;
 
 async function kda_check(){
 
-  let kda_docker_check = await shell.exec(`docker ps --filter name=zelKadenaChainWebNode | wc -l`,{ silent: true }).stdout;
-  
-  if ( kda_docker_check != 2 ){
-    console.log(`Info: KDA docker apps not detected!...check skipped`);
-    return;
-  } else {
-   console.log(`Info: KDA docker detected! checking...`);
-  }
+
+let kda_docker_check = await shell.exec(`docker ps --filter name=zelKadenaChainWebNode | wc -l`,{ silent: true }).stdout;
+
+if ( kda_docker_check != 2 ){
+console.log(`Info: KDA docker apps not detected!...check skipped`);
+return;
+} else {
+ console.log(`Info: KDA docker detected! checking...`);
+}
 
   let ip = await Myip();
   let height = await getKadenaNodeHeight(ip);
@@ -161,21 +161,16 @@ async function kda_check(){
       console.log(`Info: KDA node height unavailable!`);
     }
 
-//    if ( kda_sync == -1 ) {
-  //   console.log(`Awaiting for full sync with KDA network...`);
-  //  }
-
   let network_height = await getKadenaNetworkHeight();
   console.log("KDA Network height: "+network_height);
 
   if ( network_height == -1 ) {
     console.log(`Info: KDA network height unavailable! Check Skipped...`);
-   console.log('=================================================================');
+    console.log('=================================================================');
     return;
   }
 
-  let network_diff = Math.abs(network_height-height);
-//  console.log(`Diff: ${network_diff}`);
+ let network_diff = Math.abs(network_height-height);
 
  if (  height == -1 && kda_sync != -1) {
 
@@ -250,13 +245,13 @@ async function kda_check(){
          no_sync = 1
          console.log(`KDA node not synced with network, diff: ${network_diff}`);
          error(`KDA node not synced with network, diff: ${network_diff}`);
-         await discord_hook(`KDA node not synced, diff: ${network_diff}`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
+         await discord_hook(`KDA node not synced, diff:**${network_diff}**`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
          // KDA error notification telegram
          var emoji_title = '\u{1F6A8}';
          var emoji_bell = '\u{1F514}';
          var info_type = 'Alert '+emoji_bell;
          var field_type = 'Error: ';
-         var msg_text = `KDA node not synced, diff: ${network_diff}`;
+         var msg_text = `KDA node not synced, diff: <b>${network_diff}</b>`;
          await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
          sleep.sleep(3);
 
@@ -266,16 +261,13 @@ async function kda_check(){
 
   }
 
- if ( kda_sync == -1 ) {
-
-    let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true }).stdout;
+  if ( kda_sync == -1 ) {
     console.log(`Awaiting for full sync with KDA network...`);
-    console.log(`KDA docker status: ${docker_status}`);
+  }
 
- }
-
-
-console.log('=================================================================');
+  let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
+  console.log(`KDA docker status: ${docker_status}`);
+  console.log('=================================================================');
 
 }
 
