@@ -30,7 +30,24 @@ var historic_height = 0;
 var kda_lock=0;
 var no_sync = 0;
 var not_responding = 0;
+var job_count=0;
 
+async function jobe_creator(){
+
+  ++job_count;
+
+  if ( job_count%120 == 0 ) {
+    auto_update();
+    job_count = 0;
+  }
+  if ( job_count%4   == 0 ) {
+    zeldaemon_check();
+  }
+  if ( job_count%16 == 0 ) {
+    kda_check();
+  }
+
+}
 
 async function getKadenaNodeHeight(ip) {
   try {
@@ -45,6 +62,7 @@ async function getKadenaNodeHeight(ip) {
     return -1;
   }
 }
+
 
 
 async function getKadenaNetworkHeight() {
@@ -1445,6 +1463,4 @@ console.log('============================================================['+zelb
 
 }
 
-setInterval(zeldaemon_check, 4*60*1000);
-setInterval(auto_update, 120*60*1000);
-setInterval(kda_check, 17*60*1000);
+setInterval(jobe_creator, 1*60*1000);
