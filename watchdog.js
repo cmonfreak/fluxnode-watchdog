@@ -32,6 +32,7 @@ var historic_height = 0;
 var kda_lock=0;
 var no_sync = 0;
 var not_responding = 0;
+
 async function getKadenaNodeHeight(ip) {
   try {
       const agent = new https.Agent({
