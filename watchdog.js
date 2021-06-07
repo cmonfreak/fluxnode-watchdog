@@ -3,12 +3,14 @@ const sleep = require('sleep');
 const moment = require('moment');
 const webhook = require("webhook-discord")
 const fs = require('fs');
+const https = require('https');
 const TelegramBot = require('node-telegram-bot-api');
+const axios = require('axios');
 
 sleep.sleep(15);
 
 
-console.log('Watchdog v5.3.1 Starting...');
+console.log('Watchdog v5.4.0 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -25,7 +27,260 @@ var watchdog_sleep="N/A";
 var disc_count = 0;
 var h_IP=0;
 var component_update=0;
+var kda_sync = -1;
+var historic_height = 0;
+var kda_lock=0;
+var no_sync = 0;
+var not_responding = 0;
+async function getKadenaNodeHeight(ip) {
+  try {
+      const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
 
+    const kadenaData = await axios.get(`https://${ip}:30004/chainweb/0.0/mainnet01/cut`, { httpsAgent: agent , timeout: 5000});
+    return kadenaData.data.height;
+  } catch (e) {
+    // console.log(`${e}`);
+    return -1;
+  }
+}
+
+
+
+async function getKadenaNetworkHeight() {
+
+  try {
+
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+
+    var kadenaData1 = await axios.get(`https://us-e2.chainweb.com/chainweb/0.0/mainnet01/cut`, { httpsAgent: agent , timeout: 5000});
+    kadenaData1 = kadenaData1.data.height;
+   // console.log(`Connection 1 ${kadenaData1}`)
+
+ } catch (e) {
+    var kadenaData1 = -1
+   // console.log(`Connection 1 ${e}`);
+  }
+
+  try {
+
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+
+    var kadenaData2 = await axios.get(`https://us-w1.chainweb.com/chainweb/0.0/mainnet01/cut`, { httpsAgent: agent , timeout: 5000});
+kadenaData2 = kadenaData2.data.height;
+//console.log(`Connection 2 ${kadenaData2}`);
+ } catch (e) {
+    var kadenaData2 = -1
+      // console.log(`Connection 2 ${e}`);
+  }
+
+try {
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+var kadenaData3 = await axios.get(`https://fr1.chainweb.com/chainweb/0.0/mainnet01/cut`, { httpsAgent: agent , timeout: 5000});
+kadenaData3 = kadenaData3.data.height;
+ } catch (e) {
+    var kadenaData3 = -1
+     //console.log(`Connection 3 ${e}`);
+  }
+
+    console.log("Bootstrap node height: "+ kadenaData1 + " " +  kadenaData2 + " " + kadenaData3);
+    let kadenaData = max(Number(kadenaData1), Number(kadenaData2), Number(kadenaData3));
+    return kadenaData;
+
+}
+
+
+async function kda_check(){
+
+
+let kda_docker_check = await shell.exec(`docker ps --filter name=zelKadenaChainWebNode | wc -l`,{ silent: true }).stdout;
+
+if ( kda_docker_check != 2 ){
+console.log(`Info: KDA docker apps not detected!...check skipped`);
+return;
+} else {
+ console.log(`Info: KDA docker detected! checking...`);
+}
+
+
+
+  let ip = await Myip();
+  let height = await getKadenaNodeHeight(ip);
+
+  if ( historic_height != 0 ) {
+
+    if ( historic_height == height && kda_lock == 0 ) {
+
+       kda_sync = -1;
+       kda_lock=1;
+       console.log(`KDA sync problem detected!`);
+       error('KDA node sync freez detected!');
+       await discord_hook("KDA node sync freez detected!",web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
+       // KDA error notification telegram
+       var emoji_title = '\u{1F6A8}';
+       var emoji_bell = '\u{1F514}';
+       var info_type = 'Alert '+emoji_bell;
+       var field_type = 'Error: ';
+       var msg_text = 'KDA node sync freez detected!';
+       await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+
+       sleep.sleep(3);
+
+       if ( typeof action  == "undefined" || action == "1" ){
+
+         shell.exec(`docker restart zelKadenaChainWebNode`,{ silent: true }).stdout;
+         await discord_hook("KDA node restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
+         // Fix action telegram
+         var emoji_title = '\u{26A1}';
+         var emoji_fix = '\u{1F528}';
+         var info_type = 'Fix Action '+emoji_fix;
+         var field_type = 'Info: ';
+         var msg_text = 'KDA node restarted!';
+         await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+         console.log(`Restarting continer....`);
+
+       }
+       console.log('=================================================================');
+       return;
+
+    }
+
+  }
+
+  if ( height != -1 ){
+    historic_height = height;
+  }
+
+  console.log("KDA Node height: "+height);
+
+    if ( height  == -1 ) {
+      console.log(`Info: KDA node height unavailable!`);
+    }
+
+//    if ( kda_sync == -1 ) {
+  //   console.log(`Awaiting for full sync with KDA network...`);
+  //  }
+
+  let network_height = await getKadenaNetworkHeight();
+  console.log("KDA Network height: "+network_height);
+
+  if ( network_height == -1 ) {
+    console.log(`Info: KDA network height unavailable! Check Skipped...`);
+   console.log('=================================================================');
+    return;
+  }
+
+  let network_diff = Math.abs(network_height-height);
+//  console.log(`Diff: ${network_diff}`);
+
+ if (  height == -1 && kda_sync != -1) {
+
+   ++not_responding;
+   console.log(`Error: KDA node height unavailable`);
+
+   if ( not_responding == 2 ) {
+
+     kda_sync = -1;
+     console.log(`Error: KDA node height unavailable!`);
+     error(`KDA node height unavailable! Apps not working correct!`);
+     await discord_hook(`KDA node height unavailable!\nApps not working correct!`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
+     // KDA error notification telegram
+     var emoji_title = '\u{1F6A8}';
+     var emoji_bell = '\u{1F514}';
+     var info_type = 'Alert '+emoji_bell;
+     var field_type = 'Error: ';
+     var msg_text = `KDA node height unavailable!<pre>\n</pre>Apps not working correct!`;
+     await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+     console.log('=================================================================');
+     return;
+
+   }
+
+   else {
+
+     if ( height != -1 ){
+       not_responding = 0;
+     } else {
+      console.log(`Error: KDA node height unavailable!`);
+      console.log('=================================================================');
+      return;
+     }
+
+   }
+
+ }
+
+
+
+  if ( network_diff < 3000 ) {
+
+    if ( kda_lock == 1 ){
+
+      if ( typeof action  == "undefined" || action == "1" ){
+        await discord_hook("KDA node sync fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
+        // Daemon fixed notification telegram
+        var emoji_title = '\u{1F4A1}';
+        var emoji_fixed = '\u{2705}';
+        var info_type = 'Fixed Info '+emoji_fixed;
+        var field_type = 'Info: ';
+        var msg_text = 'KDA node sync fixed!';
+        await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+      }
+
+    }
+
+
+    kda_lock=0;
+    kda_sync = 1;
+    no_sync = 0;
+    console.log(`KDA node synced with network, diff: ${network_diff}`);
+
+  } else {
+
+    if ( kda_sync != -1 ) {
+
+      kda_sync = -1;
+
+       if ( no_sync == 0 ) {
+
+         no_sync = 1
+         console.log(`KDA node not synced with network, diff: ${network_diff}`);
+         error(`KDA node not synced with network, diff: ${network_diff}`);
+         await discord_hook(`KDA node not synced, diff: ${network_diff}`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
+         // KDA error notification telegram
+         var emoji_title = '\u{1F6A8}';
+         var emoji_bell = '\u{1F514}';
+         var info_type = 'Alert '+emoji_bell;
+         var field_type = 'Error: ';
+         var msg_text = `KDA node not synced, diff: ${network_diff}`;
+         await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+         sleep.sleep(3);
+
+       }
+
+     }
+
+  }
+
+ if ( kda_sync == -1 ) {
+
+    let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true }).stdout;
+    console.log(`Awaiting for full sync with KDA network...`);
+    console.log(`KDA docker status: ${docker_status}`);
+
+ }
+
+
+console.log('=================================================================');
+
+}
 
 async function Myip(){
 
@@ -705,7 +960,7 @@ async function zeldaemon_check() {
   web_hook_url = config.web_hook_url;
   action = config.action;
   ping=config.ping;
-  
+
 
   const service_inactive = shell.exec("systemctl list-units --full -all | grep 'zelcash' | grep -o 'inactive'",{ silent: true }).stdout;
   const data_time_utc = moment.utc().format('YYYY-MM-DD HH:mm:ss');
@@ -743,12 +998,12 @@ if ( service_inactive.trim() == "inactive" ) {
 if ( component_update == 1 ) {
     console.log('Component update detected!');
     console.log('Watchdog checking skipped!');
-    console.log('=================================================================');          
+    console.log('=================================================================');
     component_update = 0;
     return;
  }
-  
- 
+
+
 if ( zelbench_counter > 2 || zelcashd_counter > 2 ){
 
   try{
@@ -1200,5 +1455,7 @@ tire_lock=0;
 console.log('============================================================['+zelbench_counter+'/'+zelcashd_counter+']');
 
 }
+
 setInterval(zeldaemon_check, 4*60*1000);
 setInterval(auto_update, 120*60*1000);
+setInterval(kda_check, 16*60*1000);
