@@ -1447,4 +1447,4 @@ console.log('============================================================['+zelb
 
 setInterval(zeldaemon_check, 4*60*1000);
 setInterval(auto_update, 120*60*1000);
-setInterval(kda_check, 16*60*1000);
+setInterval(kda_check, 17*60*1000);
