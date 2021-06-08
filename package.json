@@ -1,9 +1,10 @@
 {
   "name": "watchdog",
-  "version": "5.6.4",
+  "version": "5.6.5",
   "description": "Watchdog for fluxnode",
   "main": "watchdog.js",
   "dependencies": {
+    "@prince25/discord-webhook-sender": "^1.2.3",
     "axios": "^0.21.1",
     "https": "^1.0.0",
     "fs": "0.0.1-security",
