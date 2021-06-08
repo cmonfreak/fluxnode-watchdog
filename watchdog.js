@@ -138,7 +138,7 @@ return;
 
        kda_sync = -1;
        kda_lock=1;
-       console.log(`KDA sync problem detected!`);
+       console.log(`KDA sync problem detected! Height: ${height}`);
        error('KDA node sync freez detected!');
        await discord_hook("KDA node sync freez detected!",web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
        // KDA error notification telegram
