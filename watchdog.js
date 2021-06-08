@@ -334,6 +334,8 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
 
 
           const Hook = new webhook.Webhook(`${web_hook_url}`);
+          Hook.setUsername('Flux Watchdog');
+          
           const msg = new webhook.MessageBuilder()
          //.setUsername("Flux Watchdog")
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
