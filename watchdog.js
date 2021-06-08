@@ -329,6 +329,10 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
 
       if ( typeof ping == "undefined" || ping == "0") {
           var node_ip = await Myip();
+          console.log(`Node ip: ${node_ip}`);
+        try {
+
+
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           const msg = new webhook.MessageBuilder()
           .setName("Flux Watchdog")
@@ -338,6 +342,11 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`);
           Hook.send(msg);
+          
+          }
+        catch (e) {
+          console.log(`Error: ${e}`);
+        }
          console.log(`discord_hook send!`);
       } else {
           var node_ip = await Myip();
