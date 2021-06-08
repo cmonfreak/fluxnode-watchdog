@@ -55,6 +55,7 @@ module.exports = {
 * Auto restart when eps drop belown minim. limit for tier
 * Auto restart MongoDB when crash
 * Auto-update supported
+* KDA node monitoring and fixer
 * Logs in real time => type "pm2 monit" and select "watchdog"  
 * Log file with error events (~/watchdog/watchdog_error.log)
 * Discord integration
