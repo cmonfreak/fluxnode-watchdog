@@ -31,6 +31,7 @@ var kda_lock=0;
 var no_sync = 0;
 var not_responding = 0;
 var job_count=0;
+var reset_height=0;
 
 async function jobe_creator(){
 
@@ -151,7 +152,8 @@ return;
        sleep.sleep(3);
 
        if ( typeof action  == "undefined" || action == "1" ){
-
+         
+         reset_height = height;
          shell.exec(`docker restart zelKadenaChainWebNode`,{ silent: true }).stdout;
          await discord_hook("KDA node restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
          // Fix action telegram
@@ -248,8 +250,10 @@ return;
 
     }
 
-
-    kda_lock=0;
+     if ( reset_height != height && height != -1 ){
+       kda_lock=0;
+     }
+    
     kda_sync = 1;
     no_sync = 0;
     console.log(`KDA node synced with network, diff: ${network_diff}`);
