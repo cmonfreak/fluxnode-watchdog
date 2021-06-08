@@ -335,7 +335,7 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
 
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           const msg = new webhook.MessageBuilder()
-          .setName("Flux Watchdog")
+          .setUsername("Flux Watchdog")
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
           .addField(`${field_name}:`, node_msg)
