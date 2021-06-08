@@ -37,7 +37,7 @@ async function jobe_creator(){
 
   ++job_count;
 
-  if ( job_count%120 == 0 ) {
+  if ( job_count%2 == 0 ) {
    await  auto_update();
   }
   if ( job_count%4   == 0 ) {
@@ -47,7 +47,7 @@ async function jobe_creator(){
     await kda_check();
   }
   // reset job count
-   if ( job_count%2 == 0 ) {
+   if ( job_count%16 == 0 ) {
     job_count = 0;
   }
   
