@@ -215,27 +215,23 @@ return;
      console.log('=================================================================');
      return;
 
-   }
-
-   else {
+   } else {
 
      if ( height != -1 ){
        not_responding = 0;
      } else {
-      console.log(`Error: KDA node height unavailable!`);
-      console.log('=================================================================');
-      return;
+       console.log(`Error: KDA node height unavailable!`);
+       console.log('=================================================================');
+       return;
      }
 
    }
 
  }
 
-
-
   if ( network_diff < 3000 ) {
 
-    if ( kda_lock == 1 ){
+    if ( kda_lock == 1 && reset_height != height ){
 
       if ( typeof action  == "undefined" || action == "1" ){
         await discord_hook("KDA node sync fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
@@ -250,7 +246,7 @@ return;
 
     }
 
-     if ( reset_height != height && height != -1 ){
+     if ( reset_height != height  ){
        kda_lock=0;
      }
     
