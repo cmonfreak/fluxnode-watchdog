@@ -163,7 +163,7 @@ return;
          var field_type = 'Info: ';
          var msg_text = 'KDA node restarted!';
          await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
-         console.log(`Restarting continer....`);
+         console.log(`Restarting container....`);
 
        }
        console.log('=================================================================');
