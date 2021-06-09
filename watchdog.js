@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v5.4.0 Starting...');
+console.log('Watchdog v5.5.0 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -32,12 +32,13 @@ var no_sync = 0;
 var not_responding = 0;
 var job_count=0;
 var reset_height=0;
+var fix_tiggered=0;
 
-async function jobe_creator(){
+async function job_creator(){
 
   ++job_count;
 
-  if ( job_count%2 == 0 ) {
+  if ( job_count%60 == 0 ) {
    await  auto_update();
   }
   if ( job_count%4   == 0 ) {
@@ -47,7 +48,7 @@ async function jobe_creator(){
     await kda_check();
   }
   // reset job count
-   if ( job_count%16 == 0 ) {
+  if ( job_count%60 == 0 ) {
     job_count = 0;
   }
   
@@ -179,9 +180,9 @@ return;
 
   console.log("KDA Node height: "+height);
 
-    if ( height  == -1 ) {
-      console.log(`Info: KDA node height unavailable!`);
-    }
+  if ( height  == -1 ) {
+     console.log(`Info: KDA node height unavailable!`);
+  }
 
   let network_height = await getKadenaNetworkHeight();
   console.log("KDA Network height: "+network_height);
@@ -204,21 +205,58 @@ return;
      kda_sync = -1;
      console.log(`Error: KDA node height unavailable!`);
      error(`KDA node height unavailable! Apps not working correct!`);
+     let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
+     console.log(`KDA docker status: ${docker_status.trim()}`);
      await discord_hook(`KDA node height unavailable!\nApps not working correct!`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
      // KDA error notification telegram
      var emoji_title = '\u{1F6A8}';
      var emoji_bell = '\u{1F514}';
      var info_type = 'Alert '+emoji_bell;
      var field_type = 'Error: ';
-     var msg_text = `KDA node height unavailable!<pre>\n</pre>Apps not working correct!`;
+     var msg_text = `KDA node not unavailable!<pre>\n</pre>Apps not working correct!`;
      await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
-     console.log('=================================================================');
+     
+     if ( typeof action  == "undefined" || action == "1" ){ 
+        fix_tiggered=1;
+        shell.exec(`docker restart zelKadenaChainWebNode`,{ silent: true }).stdout;
+        await discord_hook("KDA node restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
+        // Fix action telegram
+        var emoji_title = '\u{26A1}';
+        var emoji_fix = '\u{1F528}';
+        var info_type = 'Fix Action '+emoji_fix;
+        var field_type = 'Info: ';
+        var msg_text = 'KDA node restarted!';
+        await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+        console.log(`Restarting container....`);  
+     }  
+     
+     console.log('=================================================================');  
      return;
 
    } else {
 
      if ( height != -1 ){
-       not_responding = 0;
+       
+        not_responding = 0;
+       
+       if ( fix_tiggered == 1 ) {
+         
+         fix_tiggered=0;
+         
+         if ( typeof action  == "undefined" || action == "1" ){    
+            await discord_hook("KDA node fixed! Apps responding...",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
+            // Daemon fixed notification telegram
+            var emoji_title = '\u{1F4A1}';
+            var emoji_fixed = '\u{2705}';
+            var info_type = 'Fixed Info '+emoji_fixed;
+            var field_type = 'Info: ';
+            var msg_text = 'KDA node fixed! Apps responding...';
+            await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+         }
+         
+       }
+       
+       
      } else {
        console.log(`Error: KDA node height unavailable!`);
        console.log('=================================================================');
@@ -1473,4 +1511,4 @@ console.log('============================================================['+zelb
 
 }
 
-setInterval(jobe_creator, 1*60*1000);
+setInterval(job_creator, 1*60*1000);
