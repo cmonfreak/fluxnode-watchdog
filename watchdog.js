@@ -210,14 +210,14 @@ return;
    if ( not_responding == 2 ) {
 
      kda_sync = -1;
-     error(`KDA node height unavailable! Apps not working correct!`);
-     await discord_hook(`Apps not working correct!\nKDA docker status: **${docker_status.trim()}**`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
+     error(`KDA node height unavailable! KDA node not working correct!`);
+     await discord_hook(`KDA node not working correct!\nDocker status: **${docker_status.trim()}**`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
      // KDA error notification telegram
      var emoji_title = '\u{1F6A8}';
      var emoji_bell = '\u{1F514}';
      var info_type = 'Alert '+emoji_bell;
      var field_type = 'Error: ';
-     var msg_text = `Apps not working correct!<pre>\n</pre>KDA docker status: <b>${docker_status.trim()}</b>`;
+     var msg_text = `KDA node not working correct!<pre>\n</pre>Docker status: <b>${docker_status.trim()}</b>`;
      await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
      
      if ( typeof action  == "undefined" || action == "1" ){     
@@ -235,7 +235,7 @@ return;
      }  
      
      console.log('=================================================================');  
-     
+     return;
 
    } else {
 
