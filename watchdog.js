@@ -207,16 +207,16 @@ return;
      error(`KDA node height unavailable! Apps not working correct!`);
      let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
      console.log(`KDA docker status: ${docker_status.trim()}`);
-     await discord_hook(`KDA node height unavailable!\nApps not working correct!`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
+     await discord_hook(`KDA node height unavailable!\nApps not working correct!\nKDA docker status: ${docker_status.trim()}`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
      // KDA error notification telegram
      var emoji_title = '\u{1F6A8}';
      var emoji_bell = '\u{1F514}';
      var info_type = 'Alert '+emoji_bell;
      var field_type = 'Error: ';
-     var msg_text = `KDA node not unavailable!<pre>\n</pre>Apps not working correct!`;
+     var msg_text = `KDA node height unavailable!<pre>\n</pre>Apps not working correct!<pre>\n</pre>KDA docker status: ${docker_status.trim()}`;
      await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
      
-     if ( typeof action  == "undefined" || action == "1" ){ 
+     if ( typeof action  == "undefined" || action == "1" ){     
         fix_tiggered=1;
         shell.exec(`docker restart zelKadenaChainWebNode`,{ silent: true }).stdout;
         await discord_hook("KDA node restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
