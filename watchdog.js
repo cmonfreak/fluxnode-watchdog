@@ -33,6 +33,7 @@ var not_responding = 0;
 var job_count=0;
 var reset_height=0;
 var fix_tiggered=0;
+var kda_sleep=0;
 
 async function job_creator(){
 
@@ -238,6 +239,7 @@ return;
      if ( height != -1 ){
        
         not_responding = 0;
+        kda_sleep = 0;
        
        if ( fix_tiggered == 1 ) {
          
@@ -258,8 +260,24 @@ return;
        
        
      } else {
+       
        console.log(`Error: KDA node height unavailable!`);
        console.log('=================================================================');
+       
+       if ( kda_sleep == 0 ) {
+         
+         kda_sleep = 1; 
+         await discord_hook("KDA Watchdog in sleep mode..\nManual operation needed!",web_hook_url,ping,'Alert','#EA1414','Info','watchdog_manual1.png');
+         // KDA Watchdog in sleep mode notification telegram
+         var emoji_title = '\u{1F6A8}';
+         var emoji_bell = '\u{1F514}';
+         var info_type = 'Alert '+emoji_bell;
+         var field_type = 'Info: ';
+         var msg_text = '<b>KDA Watchdog in sleep mode!</b><pre>------------------------------\n</pre>\u{203C} <b>Manual operation needed</b> \u{203C}';
+         await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+         
+      }
+       
        return;
      }
 
