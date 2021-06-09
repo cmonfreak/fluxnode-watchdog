@@ -197,14 +197,17 @@ return;
  let network_diff = Math.abs(network_height-height);
 
  if (  height == -1 && kda_sync != -1) {
-
-   ++not_responding;
-   console.log(`Error: KDA node height unavailable`);
    
    let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
    console.log(`KDA docker status: ${docker_status.trim()}`);
+   
+   if ( docker_status != "starting" ) {
+     ++not_responding;
+   }
+   
+   console.log(`Error: KDA node height unavailable`);
 
-   if ( not_responding == 2 && docker_status != "starting" ) {
+   if ( not_responding == 2 ) {
 
      kda_sync = -1;
      console.log(`Error: KDA node height unavailable!`);
