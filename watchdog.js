@@ -177,19 +177,18 @@ return;
 
   if ( height != -1 ){
     historic_height = height;
+    console.log("KDA Node height: "+height);
   }
 
-  console.log("KDA Node height: "+height);
-
-  if ( height  == -1 ) {
-     console.log(`Info: KDA node height unavailable!`);
-  }
+ // if ( height  == -1 ) {
+    // console.log(`Info: KDA node height unavailable!`);
+ // }
 
   let network_height = await getKadenaNetworkHeight();
   console.log("KDA Network height: "+network_height);
 
   if ( network_height == -1 ) {
-    console.log(`Info: KDA network height unavailable! Check Skipped...`);
+    console.log(`Error: KDA network height unavailable! Check Skipped...`);
     console.log('=================================================================');
     return;
   }
@@ -199,14 +198,15 @@ return;
  if (  height == -1 && kda_sync != -1) {
    
    let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
+   
+   
    console.log(`KDA docker status: ${docker_status.trim()}`);
+   console.log(`Error: KDA node height unavailable!`);
    
    if ( docker_status.indexOf("starting") == "-1" ) {
      ++not_responding;
    }
    
-   console.log(`Error: KDA node height unavailable!`);
-
    if ( not_responding == 2 ) {
 
      kda_sync = -1;
