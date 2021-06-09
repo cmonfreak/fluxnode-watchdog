@@ -201,12 +201,12 @@ return;
    let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
    console.log(`KDA docker status: ${docker_status.trim()}`);
    
-   if ( docker_status !== "starting" ) {
-     console.log(`++ not_responding`);
+   if ( docker_status.indexOf("starting") !== "-1" ) {
+     console.log(`Not_responding: ${docker_status.indexOf("starting")}`);
      ++not_responding;
    }
    
-   console.log(`Error: KDA node height unavailable`);
+   console.log(`Error: KDA node height unavailable!`);
 
    if ( not_responding == 2 ) {
 
@@ -236,12 +236,12 @@ return;
      }  
      
      console.log('=================================================================');  
-     return;
+     
 
    } else {
 
      if ( height != -1 ){
-       
+      
         not_responding = 0;
         kda_sleep = 0;
        
@@ -265,23 +265,24 @@ return;
        
      } else {
        
-       console.log(`Error: KDA node height unavailable!`);
-       console.log('=================================================================');
+ 
+       if ( fix_tiggered == 1 ) {
        
-       if ( kda_sleep == 0 ) {
+         if ( kda_sleep == 0 ) {
          
-         kda_sleep = 1; 
-         await discord_hook("KDA Watchdog in sleep mode..\nManual operation needed!",web_hook_url,ping,'Alert','#EA1414','Info','watchdog_manual1.png');
-         // KDA Watchdog in sleep mode notification telegram
-         var emoji_title = '\u{1F6A8}';
-         var emoji_bell = '\u{1F514}';
-         var info_type = 'Alert '+emoji_bell;
-         var field_type = 'Info: ';
-         var msg_text = '<b>KDA Watchdog in sleep mode!</b><pre>------------------------------\n</pre>\u{203C} <b>Manual operation needed</b> \u{203C}';
-         await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
+           kda_sleep = 1; 
+           await discord_hook("KDA Watchdog in sleep mode..\nManual operation needed!",web_hook_url,ping,'Alert','#EA1414','Info','watchdog_manual1.png');
+           // KDA Watchdog in sleep mode notification telegram
+           var emoji_title = '\u{1F6A8}';
+           var emoji_bell = '\u{1F514}';
+           var info_type = 'Alert '+emoji_bell;
+           var field_type = 'Info: ';
+           var msg_text = '<b>KDA Watchdog in sleep mode!</b><pre>------------------------------\n</pre>\u{203C} <b>Manual operation needed</b> \u{203C}';
+           await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
          
+         }
       }
-       
+       console.log('=================================================================');
        return;
      }
 
