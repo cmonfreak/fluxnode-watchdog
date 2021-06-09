@@ -200,14 +200,15 @@ return;
 
    ++not_responding;
    console.log(`Error: KDA node height unavailable`);
+   
+   let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
+   console.log(`KDA docker status: ${docker_status.trim()}`);
 
-   if ( not_responding == 2 ) {
+   if ( not_responding == 2 && docker_status != "starting" ) {
 
      kda_sync = -1;
      console.log(`Error: KDA node height unavailable!`);
      error(`KDA node height unavailable! Apps not working correct!`);
-     let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
-     console.log(`KDA docker status: ${docker_status.trim()}`);
      await discord_hook(`KDA node height unavailable!\nApps not working correct!\nKDA docker status: ${docker_status.trim()}`,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png');
      // KDA error notification telegram
      var emoji_title = '\u{1F6A8}';
