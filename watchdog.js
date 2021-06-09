@@ -218,7 +218,7 @@ return;
      var emoji_bell = '\u{1F514}';
      var info_type = 'Alert '+emoji_bell;
      var field_type = 'Error: ';
-     var msg_text = `Apps not working correct!<pre>\n</pre>KDA docker status: <b>${docker_status.trim()</b>}`;
+     var msg_text = `Apps not working correct!<pre>\n</pre>KDA docker status: <b>${docker_status.trim()}</b>`;
      await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
      
      if ( typeof action  == "undefined" || action == "1" ){     
