@@ -201,8 +201,7 @@ return;
    let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
    console.log(`KDA docker status: ${docker_status.trim()}`);
    
-   if ( docker_status.indexOf("starting") !== "-1" ) {
-     console.log(`Not_responding: ${docker_status.indexOf("starting")}`);
+   if ( docker_status.indexOf("starting") == "-1" ) {
      ++not_responding;
    }
    
