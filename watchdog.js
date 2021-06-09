@@ -328,41 +328,51 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
   if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
 
       if ( typeof ping == "undefined" || ping == "0") {
-          var node_ip = await Myip();
-          console.log(`Node ip: ${node_ip}`);
-        try {
-
-
+          var node_ip = await Myip();   
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           Hook.setUsername('Flux Watchdog');
+               
           
           const msg = new webhook.MessageBuilder()
-         //.setUsername("Flux Watchdog")
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
           .addField(`${field_name}:`, node_msg)
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`);
-          Hook.send(msg);
           
+          ( async () => {        
+          try {
+               await Hook.send(msg);
+               console.log('Successfully sent webhook!');
           }
-        catch (e) {
-          console.log(`Error: ${e}`);
-        }
-         console.log(`discord_hook send!`);
+          catch(e){
+              console.log(e.message);
+          }; })();
+        
+          
       } else {
           var node_ip = await Myip();
           const Hook = new webhook.Webhook(`${web_hook_url}`);
+          Hook.setUsername('Flux Watchdog');
+        
           const msg = new webhook.MessageBuilder()
-         // .setUsername("Flux Watchdog")
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
           .addField(`${field_name}:`, node_msg)
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`)
           .setText(`Ping: <@${ping}>`);
-           Hook.send(msg);
-           console.log(`discord_hook send!`);
+        
+          ( async () => {        
+          try {
+               await Hook.send(msg);
+               console.log('Successfully sent webhook!');
+          }
+          catch(e){
+              console.log(e.message);
+          }; })();
+
+        
       }
 
    }
