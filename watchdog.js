@@ -45,7 +45,7 @@ async function job_creator(){
   if ( job_count%4   == 0 ) {
     await zeldaemon_check();
   }
-  if ( job_count%16 == 0 ) {
+  if ( job_count%2 == 0 ) {
     await kda_check();
   }
   // reset job count
