@@ -322,9 +322,7 @@ return MyIP;
 
 async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,thumbnail_png) {
 
-  
-  console.log(`Discord_hook tiggered! ${web_hook_url}`);
-  
+   
   if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
 
       if ( typeof ping == "undefined" || ping == "0") {
@@ -340,8 +338,7 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`);
           await Hook.send(msg);
-              
-        
+                    
           
       } else {
           var node_ip = await Myip();
@@ -357,7 +354,6 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           .setText(`Ping: <@${ping}>`);
           await Hook.send(msg);
   
-
         
       }
 
