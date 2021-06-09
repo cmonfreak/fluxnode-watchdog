@@ -43,7 +43,7 @@ async function job_creator(){
    await  auto_update();
   }
   if ( job_count%4   == 0 ) {
-    await zeldaemon_check();
+    await flux_check();
   }
   if ( job_count%16 == 0 ) {
     await kda_check();
@@ -1030,7 +1030,7 @@ console.log('=================================================================')
 }
 
 
-async function zeldaemon_check() {
+async function flux_check() {
 
   delete require.cache[require.resolve('./config.js')];
   var config = require('./config.js');
