@@ -46,7 +46,7 @@ async function job_creator(){
   if ( job_count%4   == 0 ) {
     await flux_check();
   }
-  if ( job_count%16 == 0 ) {
+  if ( job_count%17 == 0 ) {
     await kda_check();
   }
   // reset job count
@@ -268,15 +268,13 @@ return;
        return;
 }
 
-
-
 if ( height != -1 ){
 
   not_responding = 0;
   kda_sleep = 0;
   after_fix=0;
 
- if ( fix_tiggered == 1 ) {
+  if ( fix_tiggered == 1 ) {
 
    fix_tiggered=0;
 
@@ -388,7 +386,6 @@ return MyIP;
 
 async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,thumbnail_png) {
 
-
   if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
 
       if ( typeof ping == "undefined" || ping == "0") {
@@ -419,8 +416,6 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`)
           .setText(`Ping: <@${ping}>`);
           await Hook.send(msg);
-
-
       }
 
    }
@@ -475,8 +470,6 @@ async function Check_Sync(height) {
 
     console.log(`Flux daemon is synced (${height}, diff: ${height_diff})`);
     sync_lock = 0;
-
-
 
   } else {
 
