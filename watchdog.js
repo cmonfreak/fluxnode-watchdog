@@ -239,7 +239,9 @@ return;
     }
 
 } else {
-
+  
+   if (  height == -1 ) {
+     
        ++after_fix;
 
        if ( fix_tiggered == 1 && after_fix == 2) {
@@ -266,6 +268,9 @@ return;
        console.log(`KDA docker status: ${docker_status.trim()}`);
        console.log('=================================================================');
        return;
+     
+   }
+  
 }
 
 if ( height != -1 ){
