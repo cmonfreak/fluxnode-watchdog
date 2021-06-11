@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v5.5.0 Starting...');
+console.log('Watchdog v5.5.1 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -34,6 +34,7 @@ var job_count=0;
 var reset_height=0;
 var fix_tiggered=0;
 var kda_sleep=0;
+var after_fix=0;
 
 async function job_creator(){
 
@@ -45,14 +46,14 @@ async function job_creator(){
   if ( job_count%4   == 0 ) {
     await flux_check();
   }
-  if ( job_count%16 == 0 ) {
+  if ( job_count%17 == 0 ) {
     await kda_check();
   }
   // reset job count
   if ( job_count%60 == 0 ) {
     job_count = 0;
   }
-  
+
 }
 
 async function getKadenaNodeHeight(ip) {
@@ -68,8 +69,6 @@ async function getKadenaNodeHeight(ip) {
     return -1;
   }
 }
-
-
 
 async function getKadenaNetworkHeight() {
 
@@ -154,7 +153,7 @@ return;
        sleep.sleep(3);
 
        if ( typeof action  == "undefined" || action == "1" ){
-         
+
          reset_height = height;
          shell.exec(`docker restart zelKadenaChainWebNode`,{ silent: true }).stdout;
          await discord_hook("KDA node restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
@@ -196,18 +195,18 @@ return;
  let network_diff = Math.abs(network_height-height);
 
  if (  height == -1 && kda_sync != -1) {
-   
+
    let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
-   
-   
+
+
    console.log(`KDA docker status: ${docker_status.trim()}`);
    console.log(`Error: KDA node height unavailable!`);
-   
-   if ( docker_status.indexOf("starting") == "-1" ) {
+
+    if ( docker_status.indexOf("starting") == "-1" ) {
      ++not_responding;
-   }
-   
-   if ( not_responding == 2 ) {
+    }
+
+    if ( not_responding == 2 ) {
 
      kda_sync = -1;
      error(`KDA node height unavailable! KDA node not working correct!`);
@@ -219,8 +218,8 @@ return;
      var field_type = 'Error: ';
      var msg_text = `KDA node not working correct!<pre>\n</pre>Docker status: <b>${docker_status.trim()}</b>`;
      await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
-     
-     if ( typeof action  == "undefined" || action == "1" ){     
+
+     if ( typeof action  == "undefined" || action == "1" ){
         fix_tiggered=1;
         shell.exec(`docker restart zelKadenaChainWebNode`,{ silent: true }).stdout;
         await discord_hook("KDA node restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
@@ -231,45 +230,27 @@ return;
         var field_type = 'Info: ';
         var msg_text = 'KDA node restarted!';
         await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
-        console.log(`Restarting container....`);  
-     }  
-     
-     console.log('=================================================================');  
+        console.log(`Restarting container....`);
+     }
+
+     console.log('=================================================================');
      return;
 
-   } else {
+    }
 
-     if ( height != -1 ){
-      
-        not_responding = 0;
-        kda_sleep = 0;
-       
-       if ( fix_tiggered == 1 ) {
-         
-         fix_tiggered=0;
-         
-         if ( typeof action  == "undefined" || action == "1" ){    
-            await discord_hook("KDA node fixed! Apps responding...",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
-            // Daemon fixed notification telegram
-            var emoji_title = '\u{1F4A1}';
-            var emoji_fixed = '\u{2705}';
-            var info_type = 'Fixed Info '+emoji_fixed;
-            var field_type = 'Info: ';
-            var msg_text = 'KDA node fixed! Apps responding...';
-            await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
-         }
-         
-       }
-       
-       
-     } else {
-       
- 
-       if ( fix_tiggered == 1 ) {
-       
+} else {
+  
+   if (  height == -1 ) {
+     
+       ++after_fix;
+
+       if ( fix_tiggered == 1 && after_fix == 2) {
+
+          after_fix = 0;
+
          if ( kda_sleep == 0 ) {
-         
-           kda_sleep = 1; 
+
+           kda_sleep = 1;
            await discord_hook("KDA Watchdog in sleep mode..\nManual operation needed!",web_hook_url,ping,'Alert','#EA1414','Info','watchdog_manual1.png');
            // KDA Watchdog in sleep mode notification telegram
            var emoji_title = '\u{1F6A8}';
@@ -278,16 +259,44 @@ return;
            var field_type = 'Info: ';
            var msg_text = '<b>KDA Watchdog in sleep mode!</b><pre>------------------------------\n</pre>\u{203C} <b>Manual operation needed</b> \u{203C}';
            await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
-         
+
          }
       }
+
+       let docker_status = await shell.exec(`docker inspect --format='{{.State.Health.Status}}' zelKadenaChainWebNode`,{ silent: true });
+       console.log(`Error: KDA node not working correct!`);
+       console.log(`KDA docker status: ${docker_status.trim()}`);
        console.log('=================================================================');
        return;
-     }
+     
+   }
+  
+}
 
+if ( height != -1 ){
+
+  not_responding = 0;
+  kda_sleep = 0;
+  after_fix=0;
+
+  if ( fix_tiggered == 1 ) {
+
+   fix_tiggered=0;
+
+   if ( typeof action  == "undefined" || action == "1" ){
+      await discord_hook("KDA node fixed! Apps responding...",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png');
+      // Daemon fixed notification telegram
+      var emoji_title = '\u{1F4A1}';
+      var emoji_fixed = '\u{2705}';
+      var info_type = 'Fixed Info '+emoji_fixed;
+      var field_type = 'Info: ';
+      var msg_text = 'KDA node fixed! Apps responding...';
+      await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
    }
 
  }
+
+}
 
   if ( network_diff < 3000 ) {
 
@@ -309,7 +318,7 @@ return;
      if ( reset_height != height  ){
        kda_lock=0;
      }
-    
+
     kda_sync = 1;
     no_sync = 0;
     console.log(`KDA node synced with network, diff: ${network_diff}`);
@@ -382,15 +391,14 @@ return MyIP;
 
 async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,thumbnail_png) {
 
-   
   if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
 
       if ( typeof ping == "undefined" || ping == "0") {
-          var node_ip = await Myip();   
+          var node_ip = await Myip();
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           Hook.setUsername('Flux Watchdog');
-               
-          
+
+
           const msg = new webhook.MessageBuilder()
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
@@ -398,13 +406,13 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`);
           await Hook.send(msg);
-                    
-          
+
+
       } else {
           var node_ip = await Myip();
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           Hook.setUsername('Flux Watchdog');
-        
+
           const msg = new webhook.MessageBuilder()
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
@@ -413,8 +421,6 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`)
           .setText(`Ping: <@${ping}>`);
           await Hook.send(msg);
-  
-        
       }
 
    }
@@ -469,8 +475,6 @@ async function Check_Sync(height) {
 
     console.log(`Flux daemon is synced (${height}, diff: ${height_diff})`);
     sync_lock = 0;
-
-
 
   } else {
 
