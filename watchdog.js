@@ -325,9 +325,9 @@ if ( height != -1 ){
 
   } else {
 
-    if ( kda_sync != -1 ) {
+    if ( kda_sync != -1 && height != -1 ) {
 
-      kda_sync = -1;
+       kda_sync = -1;
 
        if ( no_sync == 0 ) {
 
