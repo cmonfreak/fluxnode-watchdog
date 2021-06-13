@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v5.5.1 Starting...');
+console.log('Watchdog v5.5.2 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -325,9 +325,9 @@ if ( height != -1 ){
 
   } else {
 
-    if ( kda_sync != -1 ) {
+    if ( kda_sync != -1 && height != -1 ) {
 
-      kda_sync = -1;
+       kda_sync = -1;
 
        if ( no_sync == 0 ) {
 
