@@ -848,7 +848,7 @@ if ( remote_version.trim() != "" && local_version.trim() != "" ){
    var local_ver = shell.exec("jq -r '.version' package.json",{ silent: true }).stdout;
    if ( local_ver.trim() == remote_version.trim() ){
 
-      await discord_hook(`Fluxnode Watchog updated!\nVersion: **${remote_version}**`,web_hook_url,ping,'Update','#1F8B4C','Info','watchdog_update1.png');
+      await discord_hook(`Fluxnode Watchdog updated!\nVersion: **${remote_version}**`,web_hook_url,ping,'Update','#1F8B4C','Info','watchdog_update1.png');
 
       // Update notification Watchdog telegram
       var emoji_title = '\u{23F0}';
