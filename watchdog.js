@@ -817,9 +817,9 @@ async function send_telegram_msg(emoji_title,info_type,field_type,msg_text,label
     const bot = new TelegramBot(token, {polling: false});
 
     if (  typeof label == "undefined" ) {
-      bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------n<b>Type: </b>"+info_type+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});
-    else {
-         bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------n<b>Type: </b>"+info_type+"\n<b>Name: <b/>"+label+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});     
+      bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------\n<b>Type: </b>"+info_type+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});
+    } else {
+         bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------\n<b>Type: </b>"+info_type+"\n<b>Name: <b/>"+label+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});     
     }
       
   }
