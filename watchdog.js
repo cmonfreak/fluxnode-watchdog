@@ -1071,11 +1071,11 @@ console.log('=================================================================')
 async function flux_check() {
 
   delete require.cache[require.resolve('./config.js')];
-  var config = require('./config.js');
-  web_hook_url = config.web_hook_url;
-  action = config.action;
+  var config=require('./config.js');
+  web_hook_url=config.web_hook_url;
+  action=config.action;
   ping=config.ping;
-
+  label=config.label; 
 
   const service_inactive = shell.exec("systemctl list-units --full -all | grep 'zelcash' | grep -o 'inactive'",{ silent: true }).stdout;
   const data_time_utc = moment.utc().format('YYYY-MM-DD HH:mm:ss');
