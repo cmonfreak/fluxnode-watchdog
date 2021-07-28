@@ -216,7 +216,7 @@ return;
      var emoji_bell = '\u{1F514}';
      var info_type = 'Alert '+emoji_bell;
      var field_type = 'Error: ';
-     var msg_text = `KDA node not working correct!<pre>\n</pre>Docker status: <b>${docker_status.trim()}</b>`;
+     var msg_text = "KDA node not working correct! \nDocker status: <b>${docker_status.trim()}</b>";
      await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
      if ( typeof action  == "undefined" || action == "1" ){
@@ -257,7 +257,7 @@ return;
            var emoji_bell = '\u{1F514}';
            var info_type = 'Alert '+emoji_bell;
            var field_type = 'Info: ';
-           var msg_text = '<b>KDA Watchdog in sleep mode!</b><pre>------------------------------\n</pre>\u{203C} <b>Manual operation needed</b> \u{203C}';
+           var msg_text = "<b>KDA Watchdog in sleep mode!</b> \n\u{203C} <b>Manual operation needed</b> \u{203C}";
            await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
          }
@@ -290,7 +290,7 @@ if ( height != -1 ){
       var emoji_fixed = '\u{2705}';
       var info_type = 'Fixed Info '+emoji_fixed;
       var field_type = 'Info: ';
-      var msg_text = 'KDA node fixed! Apps responding...';
+      var msg_text = "KDA node fixed!";
       await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
    }
 
@@ -340,7 +340,7 @@ if ( height != -1 ){
          var emoji_bell = '\u{1F514}';
          var info_type = 'Alert '+emoji_bell;
          var field_type = 'Error: ';
-         var msg_text = `KDA node not synced, diff: <b>${network_diff}</b>`;
+         var msg_text = "KDA node not synced, diff: <b>${network_diff}</b>";
          await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
          sleep.sleep(3);
 
@@ -488,7 +488,7 @@ async function Check_Sync(height) {
        var emoji_bell = '\u{1F514}';
        var info_type = 'Alert '+emoji_bell;
        var field_type = 'Error: ';
-       var msg_text = 'Flux daemon is not synced!<pre>\n</pre><b>Daemon height: </b>'+height+'<pre>\n</pre><b>Network height: </b>'+explorer_block_height+'<pre>\n</pre><b>Diff: </b>'+height_diff;
+       var msg_text = "Flux daemon is not synced! \n<b>Daemon height: </b>"+height+"\n<b>Network height: </b>"+explorer_block_height+"\n<b>Diff: </b>"+height_diff;
        await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
 
@@ -786,7 +786,7 @@ async function send_telegram_msg(emoji_title,info_type,field_type,msg_text) {
     const chatId = config.telegram_chat_id;
     const bot = new TelegramBot(token, {polling: false});
 
-    bot.sendMessage(chatId, emoji_title+'<b> FluxNode Watchdog </b>'+emoji_title+'<pre>------------------------\n</pre><b>Type: </b>'+info_type+'<pre>\n</pre><b>URL:</b> http://'+node_ip+':16126<pre>\n</pre><b>'+field_type+'</b>'+msg_text,{parse_mode: 'HTML'});
+    bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------\n<b>Type: </b>"+info_type+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});
 
   }
 
@@ -855,7 +855,7 @@ if ( remote_version.trim() != "" && local_version.trim() != "" ){
       var emoji_update='\u{1F504}';
       var info_type = 'New Update '+emoji_update;
       var field_type = 'Info: ';
-      var msg_text = 'Fluxnode Watchdog updated!<pre>\n</pre><b>Version: </b>'+remote_version;
+      var msg_text = "Fluxnode Watchdog updated! \n<b>Version: </b>"+remote_version;
       await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
       console.log('Update successfully.');
@@ -893,7 +893,7 @@ if (config.zelflux_update == "1") {
          var emoji_update='\u{1F504}';
          var info_type = 'New Update '+emoji_update;
          var field_type = 'Info: ';
-         var msg_text = 'FluxOS updated!<pre>\n</pre><b>Version: </b>'+zelflux_remote_version;
+         var msg_text = "FluxOS updated!\n<b>Version: </b>"+zelflux_remote_version;
          await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
          console.log('Update successfully.');
@@ -950,7 +950,7 @@ console.log(`Flux daemon current: ${zelcash_remote_version.trim()} installed: ${
          var emoji_update='\u{1F504}';
          var info_type = 'New Update '+emoji_update;
          var field_type = 'Info: ';
-         var msg_text = 'Fluxnode Daemon updated!<pre>\n</pre><b>Version: </b>'+zelcash_dpkg_version_after;
+         var msg_text = "Fluxnode Daemon updated! \n<b>Version: </b>"+zelcash_dpkg_version_after;
          await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
           console.log('Update successfully.');
@@ -1013,7 +1013,7 @@ if (config.zelbench_update == "1") {
        var emoji_update='\u{1F504}';
        var info_type = 'New Update '+emoji_update;
        var field_type = 'Info: ';
-       var msg_text = 'Fluxnode Benchmark updated!<pre>\n</pre><b>Version: </b>'+zelbench_dpkg_version_after;
+       var msg_text = "Fluxnode Benchmark updated! \n</pre><b>Version: </b>"+zelbench_dpkg_version_after;
        await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
         console.log('Update successfully.');
@@ -1122,7 +1122,7 @@ if ( zelbench_counter > 2 || zelcashd_counter > 2 ){
         var emoji_bell = '\u{1F514}';
         var info_type = 'Alert '+emoji_bell;
         var field_type = 'Info: ';
-        var msg_text = '<b>Watchdog in sleep mode!</b><pre>------------------------------\n</pre>\u{203C} <b>Manual operation needed</b> \u{203C}';
+        var msg_text = "<b>Watchdog in sleep mode!</b>\n----------------------------------------\n\u{203C} <b>Manual operation needed</b> \u{203C}";
         await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
         }
@@ -1190,7 +1190,7 @@ if (zelcash_node_status == "" || typeof zelcash_node_status == "undefined" ){
     var emoji_bell = '\u{1F514}';
     var info_type = 'Alert '+emoji_bell;
     var field_type = 'Error: ';
-    var msg_text = 'Fluxnode expired!<pre>\n</pre><b>UTC: </b>'+data_time_utc+'<pre>\n</pre><b>LOCAL: </b>'+local;
+    var msg_text = "Fluxnode expired! \n<b>UTC: </b>"+data_time_utc+"\n<b>LOCAL: </b>"+local;
     await send_telegram_msg(emoji_title,info_type,field_type,msg_text);
 
     }
