@@ -222,7 +222,7 @@ return;
      if ( typeof action  == "undefined" || action == "1" ){
         fix_tiggered=1;
         shell.exec(`docker restart zelKadenaChainWebNode`,{ silent: true }).stdout;
-        await discord_hook("KDA node restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png');
+        await discord_hook("KDA node restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png',label);
         // Fix action telegram
         var emoji_title = '\u{26A1}';
         var emoji_fix = '\u{1F528}';
@@ -920,7 +920,7 @@ if (config.zelflux_update == "1") {
        var zelflux_lv = shell.exec("jq -r '.version' /home/$USER/zelflux/package.json",{ silent: true }).stdout;
        if ( zelflux_remote_version.trim() == zelflux_lv.trim() ) {
 
-         await discord_hook(`FluxOS updated!\nVersion: **${zelflux_remote_version}**`,web_hook_url,ping,'Update','#1F8B4C','Info','watchdog_update1.png'label);
+         await discord_hook(`FluxOS updated!\nVersion: **${zelflux_remote_version}**`,web_hook_url,ping,'Update','#1F8B4C','Info','watchdog_update1.png',label);
 
          // Update notification FluxOS telegram
          var emoji_title = '\u{23F0}';
