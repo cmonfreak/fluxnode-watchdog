@@ -389,7 +389,7 @@ return MyIP;
 }
 
 
-async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,thumbnail_png) {
+async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,thumbnail_png,label) {
 
   if ( typeof web_hook_url !== "undefined" && web_hook_url !== "0" ) {
 
@@ -398,7 +398,8 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           Hook.setUsername('Flux Watchdog');
 
-
+         if (  typeof label == "undefined" ) {
+           
           const msg = new webhook.MessageBuilder()
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
@@ -406,6 +407,19 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`);
           await Hook.send(msg);
+           
+         } else {
+           
+          const msg = new webhook.MessageBuilder()
+          .setTitle(`:loudspeaker: **FluxNode ${title}**`)
+          .addField('Name:', `${label}`)
+          .addField('URL:', `http://${node_ip}:16126`)
+          .addField(`${field_name}:`, node_msg)
+          .setColor(`${color}`)
+          .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`);
+          await Hook.send(msg);
+           
+         }
 
 
       } else {
@@ -413,6 +427,7 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           Hook.setUsername('Flux Watchdog');
 
+        if (  typeof label == "undefined" ) {
           const msg = new webhook.MessageBuilder()
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('URL:', `http://${node_ip}:16126`)
@@ -421,6 +436,20 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`)
           .setText(`Ping: <@${ping}>`);
           await Hook.send(msg);
+        } else {
+          
+           const msg = new webhook.MessageBuilder()
+          .setTitle(`:loudspeaker: **FluxNode ${title}**`)
+          .addField('Name:', `${label}`)
+          .addField('URL:', `http://${node_ip}:16126`)
+          .addField(`${field_name}:`, node_msg)
+          .setColor(`${color}`)
+          .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`)
+          .setText(`Ping: <@${ping}>`);
+          await Hook.send(msg);
+          
+        }
+        
       }
 
    }
@@ -581,6 +610,7 @@ var web_hook_url=config.web_hook_url;
 var action=config.action;
 var ping=config.ping;
 var telegram_alert = config.telegram_alert;
+var label= config.label; 
 
 console.log('Config file:');
 console.log(`Tier: ${tire_name}`);
@@ -775,7 +805,7 @@ console.log('=================================================================')
 
 
 
-async function send_telegram_msg(emoji_title,info_type,field_type,msg_text) {
+async function send_telegram_msg(emoji_title,info_type,field_type,msg_text,label) {
 
   var telegram_alert = config.telegram_alert;
 
@@ -786,8 +816,12 @@ async function send_telegram_msg(emoji_title,info_type,field_type,msg_text) {
     const chatId = config.telegram_chat_id;
     const bot = new TelegramBot(token, {polling: false});
 
-    bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------\n<b>Type: </b>"+info_type+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});
-
+    if (  typeof label == "undefined" ) {
+      bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------n<b>Type: </b>"+info_type+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});
+    else {
+         bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------n<b>Type: </b>"+info_type+"\n<b>Name: <b/>"+label+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});     
+    }
+      
   }
 
 }
