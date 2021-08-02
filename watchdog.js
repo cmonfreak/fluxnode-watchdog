@@ -1169,6 +1169,7 @@ try{
     var zelbench_getstatus_info = JSON.parse(shell.exec(`${bench_cli} getstatus`,{ silent: true }).stdout);
     var zelbench_status = zelbench_getstatus_info.status;
     var zelback_status = zelbench_getstatus_info.zelback;
+    
     if ( typeof zelback_status  == "undefined" ){
       zelback_status = zelbench_getstatus_info.flux;
     }
@@ -1183,6 +1184,7 @@ try{
   //  var zelbench_ddwrite = zelbench_getbenchmarks_info.ddwrite;
     var zelbench_eps = zelbench_getbenchmarks_info.eps;
     var zelbench_time = zelbench_getbenchmarks_info.time;
+    var zelbench_error = zelbench_getbenchmarks_info.error;
  }catch {
 
 }
@@ -1318,14 +1320,14 @@ if (zelbench_benchmark_status == "" || typeof zelbench_benchmark_status == "unde
 
   if (zelbench_benchmark_status == "toaster" || zelbench_benchmark_status  == "failed" ){
     console.log('Benchmark status = '+zelbench_benchmark_status);
-    await  discord_hook('Benchmark '+zelbench_benchmark_status,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png',label);
+    await  discord_hook('Benchmark '+zelbench_benchmark_status+' \n**Reason:**\n'+zelbench_error,web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png',label);
 
     // Benchmark failed notification telegram
     var emoji_title = '\u{1F6A8}';
     var emoji_bell = '\u{1F514}';
     var info_type = 'Alert '+emoji_bell;
     var field_type = 'Error: ';
-    var msg_text = 'Benchmark '+zelbench_benchmark_status+' \u{274C}';
+    var msg_text = "Benchmark "+zelbench_benchmark_status+" \u{274C} \n<b>Reason:</b>\n"+zelbench_error;
     await send_telegram_msg(emoji_title,info_type,field_type,msg_text,label);
 
 
