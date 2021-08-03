@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v6.0.0 Starting...');
+console.log('Watchdog v6.0.1 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -465,7 +465,7 @@ function max() {
 }
 
 
-async function Check_Sync(height) {
+async function Check_Sync(height,time) {
 
   var exec_comment1=`curl -sk -m 8 https://explorer.flux.zelcore.io/api/status?q=getInfo | jq '.info.blocks'`
   var exec_comment2=`curl -sk -m 8 https://explorer.runonflux.io/api/status?q=getInfo | jq '.info.blocks'`
@@ -529,7 +529,7 @@ async function Check_Sync(height) {
          sleep.sleep(2);
          shell.exec("sudo fuser -k 16125/tcp",{ silent: true });
          shell.exec("sudo systemctl start zelcash",{ silent: true });
-         console.log(data_time_utc+' => Flux daemon restarting...');
+         console.log(time+' => Flux daemon restarting...');
          await discord_hook("Flux daemon restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png',label);
 
          // Fix action telegram
@@ -1565,7 +1565,7 @@ tire_lock=0;
 
 
  if ( zelcash_height != "" && typeof zelcash_height != "undefined" ){
-  await Check_Sync(zelcash_height);
+  await Check_Sync(zelcash_height,data_time_utc);
  }
 
 
