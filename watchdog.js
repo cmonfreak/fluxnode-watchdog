@@ -1250,6 +1250,7 @@ if ( typeof zelbench_status == "undefined" && typeof zelcash_check !== "undefine
 
    }
   
+  console.log('=================================================================');
   return;
   
 } else {
