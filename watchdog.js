@@ -1211,7 +1211,7 @@ try{
 
 const mongod_check = shell.exec("pgrep mongod",{ silent: true }).stdout;
 
-if ( typeof zelcash_node_status == "undefined" && typeof zelcash_check !== "undefined" ) {
+if ( typeof zelbench_status == "undefined" && typeof zelcash_check !== "undefined" ) {
   
     ++zelbench_daemon_counter;
   
