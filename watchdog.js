@@ -1217,6 +1217,7 @@ if ( typeof zelbench_status == "undefined" && typeof zelcash_check !== "undefine
   
    if ( zelbench_daemon_counter == "1" ){
 
+     console.log('Flux benchmark crash detected!');
      error('Flux benchmark crash detected!');
      await discord_hook("Flux benchmark crash detected!",web_hook_url,ping,'Alert','#EA1414','Error','watchdog_error1.png',label);
 
