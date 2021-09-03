@@ -36,6 +36,7 @@ var reset_height=0;
 var fix_tiggered=0;
 var kda_sleep=0;
 var after_fix=0;
+var sleep_msg=0;
 
 async function job_creator(){
 
@@ -1148,18 +1149,23 @@ if ( zelbench_counter > 2 || zelcashd_counter > 2 || zelbench_daemon_counter > 2
           zelbench_counter=0;
           zelbench_daemon_counter=0;
           watchdog_sleep="N/A"
+          sleep_msg=0;
    } else {
         console.log('Watchdog in sleep mode => '+data_time_utc);
         console.log('=================================================================');
         if  (  zelcashd_counter == 3  || zelbench_counter == 3 ) {
-        await discord_hook("Watchdog in sleep mode..\nManual operation needed!",web_hook_url,ping,'Alert','#EA1414','Info','watchdog_manual1.png',label);
-        // Watchdog in sleep mode notification telegram
-        var emoji_title = '\u{1F6A8}';
-        var emoji_bell = '\u{1F514}';
-        var info_type = 'Alert '+emoji_bell;
-        var field_type = 'Info: ';
-        var msg_text = "<b>Watchdog in sleep mode!</b>\n----------------------------------------\n\u{203C} <b>Manual operation needed</b> \u{203C}";
-        await send_telegram_msg(emoji_title,info_type,field_type,msg_text,label);
+          
+          if  ( sleep_msg == "0" ) { 
+            sleep_msg=1;
+            await discord_hook("Watchdog in sleep mode..\nManual operation needed!",web_hook_url,ping,'Alert','#EA1414','Info','watchdog_manual1.png',label);
+          // Watchdog in sleep mode notification telegram
+            var emoji_title = '\u{1F6A8}';
+            var emoji_bell = '\u{1F514}';
+            var info_type = 'Alert '+emoji_bell;
+            var field_type = 'Info: ';
+            var msg_text = "<b>Watchdog in sleep mode!</b>\n----------------------------------------\n\u{203C} <b>Manual operation needed</b> \u{203C}";
+            await send_telegram_msg(emoji_title,info_type,field_type,msg_text,label);
+          }
 
         }
         return;
