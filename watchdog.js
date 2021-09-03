@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v6.0.2 Starting...');
+console.log('Watchdog v6.0.3 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -1326,6 +1326,7 @@ if (zelback_status == "" || typeof zelback_status == "undefined"){
 
        if ( disc_count == 2 ){
         shell.exec("pm2 restart flux",{ silent: true });
+        shell.exec("sudo systemctl restart zelflux",{ silent: true });
         sleep.sleep(2);
         console.log(data_time_utc+' => FluxOS restarting...');
         await discord_hook("FluxOS restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png',label);
