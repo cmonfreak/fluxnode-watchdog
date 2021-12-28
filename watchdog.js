@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v6.0.4 Starting...');
+console.log('Watchdog v6.0.5 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -1642,7 +1642,7 @@ tire_lock=0;
    if ( skip_sync > 2 ) {
      await Check_Sync(zelcash_height,data_time_utc);
    } else {   
-    console.log('Sync check skipped: '+skip_sync+' > 2');   
+    console.log('Sync check skipped: '+skip_sync+' <= 2');   
    }
       
  }
