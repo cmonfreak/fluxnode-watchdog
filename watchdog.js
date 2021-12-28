@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v6.0.4 Starting...');
+console.log('Watchdog v6.0.5 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -37,6 +37,12 @@ var fix_tiggered=0;
 var kda_sleep=0;
 var after_fix=0;
 var sleep_msg=0;
+
+function between(min, max) {  
+  return Math.floor(
+    Math.random() * (max - min) + min
+  )
+}
 
 async function job_creator(){
 
@@ -469,13 +475,13 @@ function max() {
 
 async function Check_Sync(height,time) {
 
-  var exec_comment1=`curl -sk -m 8 https://explorer.flux.zelcore.io/api/status?q=getInfo | jq '.info.blocks'`
+  // var exec_comment1=`curl -sk -m 8 https://explorer.flux.zelcore.io/api/status?q=getInfo | jq '.info.blocks'`
   var exec_comment2=`curl -sk -m 8 https://explorer.runonflux.io/api/status?q=getInfo | jq '.info.blocks'`
   var exec_comment3=`curl -sk -m 8 https://explorer.zelcash.online/api/status?q=getInfo | jq '.info.blocks'`
-  var explorer_block_height_01 = await shell.exec(`${exec_comment1}`,{ silent: true }).stdout;
+ // var explorer_block_height_01 = await shell.exec(`${exec_comment1}`,{ silent: true }).stdout;
   var explorer_block_height_02 = await shell.exec(`${exec_comment2}`,{ silent: true }).stdout;
   var explorer_block_height_03 = await shell.exec(`${exec_comment3}`,{ silent: true }).stdout;
-  var explorer_block_height = max(explorer_block_height_01,explorer_block_height_02,explorer_block_height_03);
+  var explorer_block_height = max(explorer_block_height_02,explorer_block_height_03);
   var height_diff = Math.abs(explorer_block_height-height);
 
   if ( explorer_block_height == 0 ) {
@@ -1630,9 +1636,15 @@ tire_lock=0;
 }
 
 
-
  if ( zelcash_height != "" && typeof zelcash_height != "undefined" ){
-  await Check_Sync(zelcash_height,data_time_utc);
+   
+   var skip_sync=between(1, 4);
+   if ( skip_sync > 2 ) {
+     await Check_Sync(zelcash_height,data_time_utc);
+   } else {   
+    console.log('Sync check skipped: '+skip_sync+' <= 2');   
+   }
+      
  }
 
 
