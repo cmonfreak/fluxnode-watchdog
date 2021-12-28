@@ -1636,12 +1636,15 @@ tire_lock=0;
 }
 
 
-
  if ( zelcash_height != "" && typeof zelcash_height != "undefined" ){
    
-   
-  await Check_Sync(zelcash_height,data_time_utc);
-   
+   var skip_sync=between(1, 4);
+   if ( skip_sync > 2 ) {
+     await Check_Sync(zelcash_height,data_time_utc);
+   } else {   
+    console.log('Sync check skipped: '+skip_sync+' > 2');   
+   }
+      
  }
 
 
