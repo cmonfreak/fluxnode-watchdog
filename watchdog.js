@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v6.0.5 Starting...');
+console.log('Watchdog v6.0.6 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -486,6 +486,11 @@ async function Check_Sync(height,time) {
 
   if ( explorer_block_height == 0 ) {
     console.log(`Info: Flux network height unavailable! Check Skipped...`);
+    return;
+  }
+  
+  if ( height > explorer_block_height ) {
+    console.log(`Info: Flux node height > network height! Check Skipped...`);
     return;
   }
 
