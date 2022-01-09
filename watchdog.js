@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v6.0.6 Starting...');
+console.log('Watchdog v6.0.7 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -224,7 +224,7 @@ return;
      var emoji_bell = '\u{1F514}';
      var info_type = 'Alert '+emoji_bell;
      var field_type = 'Error: ';
-     var msg_text = "KDA node not working correct! \nDocker status: <b>${docker_status.trim()}</b>";
+     var msg_text = "KDA node not working correct! \nDocker status: <b>"+docker_status.trim()+"</b>";
      await send_telegram_msg(emoji_title,info_type,field_type,msg_text,label);
 
      if ( typeof action  == "undefined" || action == "1" ){
@@ -348,7 +348,7 @@ if ( height != -1 ){
          var emoji_bell = '\u{1F514}';
          var info_type = 'Alert '+emoji_bell;
          var field_type = 'Error: ';
-         var msg_text = "KDA node not synced, diff: <b>${network_diff}</b>";
+         var msg_text = "KDA node not synced, diff: <b>"+network_diff+"</b>";
          await send_telegram_msg(emoji_title,info_type,field_type,msg_text,label);
          sleep.sleep(3);
 
