@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 sleep.sleep(15);
-console.log('Watchdog v6.0.7 Starting...');
+console.log('Watchdog v6.0.8 Starting...');
 console.log('=================================================================');
 
 const path = 'config.js';
@@ -403,6 +403,12 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
 
       if ( typeof ping == "undefined" || ping == "0") {
           var node_ip = await Myip();
+          var api_port = await shell.exec("grep -w apiport /home/$USER/zelflux/config/userconfig.js | grep -o '[[:digit:]]*'",{ silent: true });
+          if ( api_port == "" ){
+             var ui_port = 16126;
+          } else {
+             var ui_port = (Number(api_port.trim()))-1;
+          }
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           Hook.setUsername('Flux Watchdog');
 
@@ -410,7 +416,7 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
            
           const msg = new webhook.MessageBuilder()
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
-          .addField('URL:', `http://${node_ip}:16126`)
+          .addField('URL:', `http://${node_ip}:${ui_port}`)
           .addField(`${field_name}:`, node_msg)
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`);
@@ -421,7 +427,7 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
           const msg = new webhook.MessageBuilder()
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('Name:', `${label}`)
-          .addField('URL:', `http://${node_ip}:16126`)
+          .addField('URL:', `http://${node_ip}:${ui_port}`)
           .addField(`${field_name}:`, node_msg)
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`);
@@ -432,13 +438,19 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
 
       } else {
           var node_ip = await Myip();
+          var api_port = await shell.exec("grep -w apiport /home/$USER/zelflux/config/userconfig.js | grep -o '[[:digit:]]*'",{ silent: true });
+          if ( api_port == "" ){
+             var ui_port = 16126;
+          } else {
+             var ui_port = (Number(api_port.trim()))-1;
+          }
           const Hook = new webhook.Webhook(`${web_hook_url}`);
           Hook.setUsername('Flux Watchdog');
 
         if (  typeof label == "undefined" ) {
           const msg = new webhook.MessageBuilder()
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
-          .addField('URL:', `http://${node_ip}:16126`)
+          .addField('URL:', `http://${node_ip}:${ui_port}`)
           .addField(`${field_name}:`, node_msg)
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`)
@@ -449,7 +461,7 @@ async function discord_hook(node_msg,web_hook_url,ping,title,color,field_name,th
            const msg = new webhook.MessageBuilder()
           .setTitle(`:loudspeaker: **FluxNode ${title}**`)
           .addField('Name:', `${label}`)
-          .addField('URL:', `http://${node_ip}:16126`)
+          .addField('URL:', `http://${node_ip}:${ui_port}`)
           .addField(`${field_name}:`, node_msg)
           .setColor(`${color}`)
           .setThumbnail(`https://fluxnodeservice.com/images/${thumbnail_png}`)
@@ -825,14 +837,20 @@ async function send_telegram_msg(emoji_title,info_type,field_type,msg_text,label
   if  ( typeof telegram_alert !== "undefined" && telegram_alert == 1 ) {
 
     const node_ip = await Myip();
+    var api_port = await shell.exec("grep -w apiport /home/$USER/zelflux/config/userconfig.js | grep -o '[[:digit:]]*'",{ silent: true });
+          if ( api_port == "" ){
+             var ui_port = 16126;
+          } else {
+             var ui_port = (Number(api_port.trim()))-1;
+          }
     const token = config.telegram_bot_token;
     const chatId = config.telegram_chat_id;
     const bot = new TelegramBot(token, {polling: false});
 
     if (  typeof label == "undefined" ) {
-      bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------\n<b>Type: </b>"+info_type+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});
+      bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------\n<b>Type: </b>"+info_type+"\n<b>URL:</b> http://"+node_ip+":"+ui_port+"\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});
     } else {
-         bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------\n<b>Type: </b>"+info_type+"\n<b>Name: </b>"+label+"\n<b>URL:</b> http://"+node_ip+":16126\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});     
+         bot.sendMessage(chatId, emoji_title+"<b> FluxNode Watchdog </b>"+emoji_title+"\n----------------------------------------\n<b>Type: </b>"+info_type+"\n<b>Name: </b>"+label+"\n<b>URL:</b> http://"+node_ip+":"+ui_port+"\n<b>"+field_type+"</b>"+msg_text,{parse_mode: 'HTML'});     
     }
       
   }
