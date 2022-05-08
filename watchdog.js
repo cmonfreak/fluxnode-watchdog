@@ -23,6 +23,7 @@ var mongod_counter=0;
 var paid_local_time="N/A";
 var expiried_time="N/A";
 var watchdog_sleep="N/A";
+var watchdog_sleep_counter=0;
 var disc_count = 0;
 var h_IP=0;
 var component_update=0;
@@ -893,7 +894,7 @@ async function auto_update() {
 
  delete require.cache[require.resolve('./config.js')];
  var config = require('./config.js');
- var remote_version = shell.exec("curl -sS -m 5 https://raw.githubusercontent.com/RunOnFlux/fluxnode-watchdog/master/package.json | jq -r '.version'",{ silent: true }).stdout;
+ var remote_version = shell.exec("curl -sS -m 5 https://raw.githubusercontent.com/abudfv/fluxnode-watchdog/master/package.json | jq -r '.version'",{ silent: true }).stdout;
  var local_version = shell.exec("jq -r '.version' package.json",{ silent: true }).stdout;
 
 console.log(' UPDATE CHECKING....');
@@ -1164,7 +1165,10 @@ if ( zelbench_counter > 2 || zelcashd_counter > 2 || zelbench_daemon_counter > 2
    if (watchdog_sleep != "1"){
 
       watchdog_sleep="1";
-
+      ++watchdog_sleep_counter;
+     if ( watchdog_sleep_counter > 2 ) {
+       shell.exec("sudo reboot",{ silent: true })
+     }
      if ( zelcashd_counter > 2 ) {
        error('Watchdog in sleep mode! Flux daemon status: not responding');
       } else {
@@ -1179,6 +1183,7 @@ if ( zelbench_counter > 2 || zelcashd_counter > 2 || zelbench_daemon_counter > 2
           zelbench_daemon_counter=0;
           watchdog_sleep="N/A"
           sleep_msg=0;
+          watchdog_sleep_counter=0;
    } else {
         console.log('Watchdog in sleep mode => '+data_time_utc);
         console.log('=================================================================');
