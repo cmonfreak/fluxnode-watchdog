@@ -1166,9 +1166,7 @@ if ( zelbench_counter > 2 || zelcashd_counter > 2 || zelbench_daemon_counter > 2
 
       watchdog_sleep="1";
       ++watchdog_sleep_counter;
-     if ( watchdog_sleep_counter > 2 ) {
-       shell.exec("sudo reboot",{ silent: true })
-     }
+
      if ( zelcashd_counter > 2 ) {
        error('Watchdog in sleep mode! Flux daemon status: not responding');
       } else {
@@ -1202,7 +1200,10 @@ if ( zelbench_counter > 2 || zelcashd_counter > 2 || zelbench_daemon_counter > 2
           }
 
         }
-        return;
+        if ( watchdog_sleep_counter > 2 ) {
+          shell.exec("sudo reboot",{ silent: true })
+        } 
+     return;
    }
  }
 
