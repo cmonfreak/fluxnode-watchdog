@@ -17,9 +17,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/RunOnFlux/fluxnode-watchdog.git"
+    "url": "https://github.com/abudfv/fluxnode-watchdog.git"
   },
   "keywords": [],
-  "author": "XK4MiLX",
+  "author": "abudfv",
   "license": "ISC"
 }
