@@ -635,8 +635,8 @@ var web_hook_url=config.web_hook_url;
 var action=config.action;
 var ping=config.ping;
 var telegram_alert = config.telegram_alert;
-#var label= config.label; 
-var label= os.hostname().toLowerCase();
+var label= config.label; 
+#var label= os.hostname().toLowerCase();
 
 console.log('Config file:');
 console.log(`Tier: ${tire_name}`);
