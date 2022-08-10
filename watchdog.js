@@ -1616,7 +1616,7 @@ if ( zelbench_benchmark_status == "toaster" || zelbench_benchmark_status == "fai
     var emoji_fix = '\u{1F528}';
     var info_type = 'Fix Action '+emoji_fix;
     var field_type = 'Info: ';
-    var msg_text = 'Benchmark restarted!';
+    var msg_text = 'Benchmark restarted! Zelbench_counter :'+zelbench_counter ;
     await send_telegram_msg(emoji_title,info_type,field_type,msg_text,label);
 
   }
