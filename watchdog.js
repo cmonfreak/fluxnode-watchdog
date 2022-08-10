@@ -1624,6 +1624,8 @@ if ( zelbench_benchmark_status == "toaster" || zelbench_benchmark_status == "fai
 else{
 
  if ( zelbench_counter != 0 ) {
+  error('DEBUG BEFORE FIX: '+zelbench_benchmark_status);
+  console.log('DEBUG BEFORE FIX: '+zelbench_benchmark_status);
 
   await discord_hook("Flux benchmark fixed!",web_hook_url,ping,'Fix Info','#1F8B4C','Info','watchdog_fixed2.png',label);
 
