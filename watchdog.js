@@ -1621,6 +1621,16 @@ if ( zelbench_benchmark_status == "toaster" || zelbench_benchmark_status == "fai
 
   }
 }
+else if (zelbench_benchmark_status == "running") {  
+    // Fix action benchmark notification telegram
+    var emoji_title = '\u{26A1}';
+    var emoji_fix = '\u{1F528}';
+    var info_type = 'Fix Action '+emoji_fix;
+    var field_type = 'Info: ';
+    var msg_text = 'Benchmark running!';
+    await send_telegram_msg(emoji_title,info_type,field_type,msg_text,label);
+  
+}
 else{
 
  if ( zelbench_counter != 0 ) {
@@ -1638,7 +1648,7 @@ else{
   await send_telegram_msg(emoji_title,info_type,field_type,msg_text,label);
 
  }
-zelbench_counter=0;
+ zelbench_counter=0;
 }
 
 delete require.cache[require.resolve('./config.js')];
