@@ -1608,7 +1608,7 @@ if ( zelbench_benchmark_status == "toaster" || zelbench_benchmark_status == "fai
   if ( typeof action  == "undefined" || action == "1" ){
 
     console.log(data_time_utc+' => Fluxbench restarting...');
-    shell.exec(`${bench_cli} restartnodebenchmarks`,{ silent: true });
+    shell.exec("sudo reboot",{ silent: true });
     await discord_hook("Benchmark restarted!",web_hook_url,ping,'Fix Action','#FFFF00','Info','watchdog_fix1.png',label);
 
     // Fix action benchmark notification telegram
